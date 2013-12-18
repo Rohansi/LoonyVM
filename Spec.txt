@@ -1,0 +1,90 @@
+Virtual Machine
+--------------------
+Has at least 512kB of memory.
+
+Registers
+--------------------
+R0-R9   10 general purpose registers
+IP      Instruction pointer
+SP      Stack pointer
+
+Instructions
+--------------------
+00  MOV   DST, SRC    Set
+01  ADD   DST, SRC    Add
+02  SUB   DST, SRC    Subtract
+03  MUL   DST, SRC    Multiply
+04  DIV   DST, SRC    Divide
+05  REM   DST, SRC    Remainder
+06  INC   DST         Increment
+07  DEC   DST         Decrement
+08  NOT   DST         Bitwise not
+09  AND   DST, SRC    Bitwise and
+0A  OR    DST, SRC    Bitwise or
+0B  XOR   DST, SRC    Bitwise xor
+0C  SHL   DST, SRC    Bit shift left
+0D  SHR   DST, SRC    Bit shift right
+0E  PUSH  DST         Pushes a value to the stack
+0F  POP   DST         Pops a value from the stack
+10  JMP   DST         Jump to location
+11  CALL  DST         Call a subroutine
+12  RET               Return from a subroutine
+13  CMP   DST, SRC    Compare two values, zero is only checked on DST
+14  JZ    DST         Jump if zero
+15  JNZ   DST         Jump if not zero
+16  JE    DST         Jump if equal
+17  JNE   DST         Jump if not equal
+18  JA    DST         Jump if above
+19  JAE   DST         Jump if above or equal
+1A  JB    DST         Jump if below
+1B  JBE   DST         Jump if below or equal
+1C  RAND  DST         Obtain a random number
+1D  INT   DST, SRC    Call interrupt
+1E  IRET  DST, SRC    Return from interrupt
+1F  IVT   DST         Set the location of the interrupt vector table
+20  ABS   DST         Absolute value
+
+All math instructions (including bitwise) change the zero flag based on the result (which will be stored in DST).
+
+Operands
+--------------------
+Operands (DST/SRC) can be one the following values:
+ - Register (R0 through R8, SP or IP)
+ - Immediate
+ - or any of the above surrounded by square brackets making them pointers.
+
+Flags register
+--------------------
+The internal flags register has a flag for each condition:
+ 0000BAEZ
+	
+ Z   Zero
+ E   Equal
+ A   Above
+ B   Below
+
+Bytecode
+--------------------
+Instructions are assembled into the following format:
+ AAAAAAAA BBBBCCCCC DDDDEEEE POTTPOTT <Payload, left first>
+ 
+ A   Opcode (see first column in instructions)
+ B,C Operand type
+ D,E Offset register
+ P   Pointer flag
+ O   Offset flag
+ T   Value type
+ 
+Operands Types:
+ 00-09  Register
+ 0A     BP
+ 0B     IP
+ 0C     SP
+ 0D     Immediate byte
+ 0E     Immediate word
+ 0F     Immediate dword
+
+Value Types:
+ 00     byte
+ 01     word
+ 02     dword
