@@ -40,10 +40,13 @@ namespace LoonyVM
         private Device[] _devices;
         private int _errorIp;
 
-        public VirtualMachine()
+        public VirtualMachine(int memorySize)
         {
+            if (memorySize < 512 * 1024)
+                throw new ArgumentOutOfRangeException("memorySize", "VM should have at least 512kB of memory");
+
             Registers = new int[13];
-            Memory = new byte[512 * 1024];
+            Memory = new byte[memorySize];
 
             IP = 0;
             SP = Memory.Length;
@@ -262,8 +265,6 @@ namespace LoonyVM
 
         public void Interrupt(byte index)
         {
-            Push(SP);
-            Push(IP);
             Push((int)_flags);
 
             for (var i = Registers.Length - 1; i >= 0; i--)
@@ -271,7 +272,7 @@ namespace LoonyVM
                 Push(Registers[i]);
             }
 
-            IP = Memory.ReadInt(_ivt + (index * 4));
+            IP = Memory.ReadInt(_ivt + (index * sizeof(int)));
 
             _interrupted = true;
         }
@@ -284,22 +285,20 @@ namespace LoonyVM
             }
 
             _flags = (Flags)Pop();
-            IP = Pop();
-            SP = Pop();
 
             _interrupted = false;
         }
 
         private void Push(int value)
         {
-            SP -= 4;
+            SP -= sizeof(int);
             Memory.WriteInt(SP, value);
         }
 
         private int Pop()
         {
             var value = Memory.ReadInt(SP);
-            SP += 4;
+            SP += sizeof(int);
             return value;
         }
 
