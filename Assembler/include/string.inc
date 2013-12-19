@@ -1,48 +1,3 @@
-include 'loonyvm.inc'
-
-ccall puts, str1
-ccall puts, testStr
-ccall puts, str2
-ccall strlen, testStr
-ccall itoa, r0, itoaBuffer
-ccall puts, itoaBuffer
-int r0
-
-halt: jmp halt
-
-str1: db 'strlen("', 0
-str2: db '") = ', 0
-testStr: db 'hello world', 0
-itoaBuffer: db '-1234567890', 0
-
-; void puts(byte* str)
-puts:
-	push bp
-	mov bp, sp
-	push r1
-	push r2
-	
-	mov r1, [bp + 8]
-	mov r2, [cursor]
-	
-@@:
-	cmp byte [r1], 0
-	jz .return
-	mov byte [r2], byte [r1]
-	inc r2
-	mov byte [r2], 0x0F
-	inc r2
-	inc r1
-	jmp @b
-
-.return:
-	mov [cursor], r2
-	pop r2
-	pop r1
-	pop bp
-	ret
-	
-cursor: dd 0x60000
 
 ; int strlen(byte* str)
 strlen:
@@ -63,7 +18,7 @@ strlen:
 .return:
 	pop r1
 	pop bp
-	ret
+	retn 4
 
 ; void strreverse(byte* str)
 strreverse:
@@ -75,7 +30,7 @@ strreverse:
 	
 	mov r1, [bp + 8]
 	mov r2, r1
-	ccall strlen, r1
+	invoke strlen, r1
 	add r2, r0
 	dec r2
 	
@@ -94,7 +49,7 @@ strreverse:
 	pop r2
 	pop r1
 	pop bp
-	ret
+	retn 4
 
 ; void itoa(int value, byte* str)
 itoa:
@@ -130,7 +85,7 @@ itoa:
 	xor byte [r2], byte [r2]
 	
 	pop r2
-	ccall strreverse, r2
+	invoke strreverse, r2
 	
 	jmp .return
 	
@@ -139,7 +94,7 @@ itoa:
 	pop r2
 	pop r1
 	pop bp
-	ret
+	retn 8
 	
 .lookup:
 	db '0123456789'

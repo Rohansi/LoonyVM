@@ -246,6 +246,10 @@ namespace LoonyVM
                         _instruction.Left.Set(result);
                         SetZero(result);
                         break;
+                    case Opcode.Retn:
+                        IP = Pop();
+                        SP += _instruction.Left.Get();
+                        break;
                     default:
                         throw new VirtualMachineException(_errorIp, "Invalid opcode");
                 }

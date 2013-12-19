@@ -69,6 +69,7 @@ ip equ rip
 @iret= 0x1E
 @ivt = 0x1F
 @abs = 0x20
+@retn= 0x21 
 
 macro _pParseOperand value {
 	define v value
@@ -274,7 +275,7 @@ irps instr, mov add sub mul div rem and or xor shl shr cmp {
 	\} 
 }
 
-irps instr, inc dec not push pop jmp call jz jnz je jne ja jae jb jbe rand int ivt abs { 
+irps instr, inc dec not push pop jmp call jz jnz je jne ja jae jb jbe rand int ivt abs retn { 
 	macro instr a \{
 		_pInstruction1 @\#instr,a
 	\} 
