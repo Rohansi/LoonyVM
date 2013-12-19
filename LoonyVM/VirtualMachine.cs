@@ -2,7 +2,7 @@
 
 namespace LoonyVM
 {
-    public class VirtualMachine
+    public partial class VirtualMachine
     {
         [Flags]
         private enum Flags : byte
@@ -37,7 +37,7 @@ namespace LoonyVM
         private Instruction _instruction;
         private bool _interrupted;
         private int _ivt;
-        private Device[] _devices;
+        private IDevice[] _devices;
         private int _errorIp;
 
         public VirtualMachine(int memorySize)
@@ -55,10 +55,12 @@ namespace LoonyVM
             _instruction = new Instruction(this);
             _interrupted = false;
             _ivt = 0;
-            _devices = new Device[32];
+            _devices = new IDevice[32];
+
+            Attach(this);
         }
 
-        public void Attach(Device device)
+        public void Attach(IDevice device)
         {
             if (_devices[device.Id] != null)
                 throw new Exception("Duplicate device id");
@@ -87,6 +89,7 @@ namespace LoonyVM
                 }
 
                 _instruction.Decode();
+                Console.WriteLine(_instruction);
 
                 int result;
                 switch (_instruction.Opcode)
@@ -178,6 +181,8 @@ namespace LoonyVM
                     case Opcode.Cmp:
                         var cmpValL = _instruction.Left.Get();
                         var cmpValR = _instruction.Right.Get();
+
+                        Console.WriteLine("{0} ({1})", (char)cmpValL, cmpValL);
 
                         _flags = Flags.None;
                         if (cmpValL == 0)

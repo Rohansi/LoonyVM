@@ -53,6 +53,12 @@ Operands (DST/SRC) can be one the following values:
  - Immediate
  - or any of the above surrounded by square brackets making them pointers.
 
+Memory Map
+--------------------
+00000000 -> 00000000  Unused
+00060000 -> 0006FFFF  Video Memory
+00070000 -> FFFFFFFF  Unused
+
 Flags register
 --------------------
 The internal flags register has a flag for each condition:

@@ -118,33 +118,32 @@ macro _pParseOperand value {
 	
 	match expr,v \{
 		define v
-		if expr eqtype 0
+		
+		if 0 = 1
+	irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp ip sp \\{
+		else if expr eq reg
+			@operand = @\\#reg
+	\\}
+		else
 			@hasPayload = 1
 			@a = dword expr
 			
-			if @a <= 255
+			if @a <= 127
 				@operand = @immb
 				@payloadType = 0
 				@payload = byte expr
-			else if @a <= 65535
+			else if @a <= 32767
 				@operand = @immw
 				@payloadType = 1
 				@payload = word expr
-			else if @a <= 4294967295
+			else if @a <= 2147483647
 				@operand = @immd
 				@payloadType = 2
 				@payload = dword expr
 			else
-				assert 0
-			end if
-		else
-			if 0 = 1
-		irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp ip sp \\{
-			else if expr eq reg
-				@operand = @\\#reg
-		\\}
-			else
-				assert 0
+				@operand = @immd     ; TODO: make negatives space efficient
+				@payloadType = 2
+				@payload = dword expr
 			end if
 		end if
 	\}

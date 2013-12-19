@@ -3,8 +3,7 @@ include 'loonyvm.inc'
 ccall fibonacci, 20
 int r0
 
-halt:
-	jmp halt
+halt: jmp halt
 
 fibonacci:
 	push bp

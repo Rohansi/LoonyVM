@@ -1,22 +1,47 @@
-﻿using System.IO;
-using System.Threading;
+﻿using System;
+using System.IO;
+using System.Linq;
+using SFML.Graphics;
+using SFML.Window;
 
 namespace LoonyVM
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static VirtualMachine Machine;
+        public static RenderWindow Window;
+
+        public static void Main(string[] args)
         {
-            var vm = new VirtualMachine();
-            var prog = File.ReadAllBytes("test.bin");
+            Window = new RenderWindow(new VideoMode(640, 480), "", Styles.Close);
+            Window.SetFramerateLimit(60);
 
-            for (var i = 0; i < prog.Length; i++)
-                vm.Memory[i] = prog[i];
+            Window.Closed += (sender, eventArgs) => Window.Close();
 
-            while (true)
+            Window.Resized += (sender, eventArgs) =>
             {
-                vm.Step();
-                //Thread.Sleep(250);
+                var view = new View();
+                view.Size = new Vector2f(eventArgs.Width, eventArgs.Height);
+                view.Center = view.Size / 2;
+                Window.SetView(view);
+            };
+
+            Machine = new VirtualMachine(512 * 1024);
+
+            var prog = File.ReadAllBytes("test.bin");
+            for (var i = 0; i < prog.Length; i++)
+                Machine.Memory[i] = prog[i];
+
+            var display = new Devices.Display(Machine, Window);
+
+            while (Window.IsOpen())
+            {
+                Window.DispatchEvents();
+                Machine.Step();
+
+                Window.Clear();
+                Window.Draw(display);
+                Window.Display();
             }
         }
     }
