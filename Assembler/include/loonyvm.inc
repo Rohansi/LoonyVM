@@ -82,7 +82,7 @@ macro _pParseOperand value {
 	@hasPayload = 0
 	@payloadType = 2
 	@payload = 0
-	
+
 	match =byte op,v \{
 		define v op
 		@operandType = 0
@@ -231,7 +231,7 @@ macro _pInstruction1 opcode,a {
 	
 	_pParseOperand a
 	@b1 = @b1 or (@operand shl 4)
-	@b3 = @b3 or (@payloadType shl 4)
+	@b3 = @b3 or (@operandType shl 4)
 	if @isPtr = 1
 		@b3 = @b3 or 0x80
 	end if

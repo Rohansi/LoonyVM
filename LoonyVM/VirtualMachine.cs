@@ -89,7 +89,7 @@ namespace LoonyVM
                 }
 
                 _instruction.Decode();
-                Console.WriteLine(_instruction);
+                //Console.WriteLine(_instruction);
 
                 int result;
                 switch (_instruction.Opcode)
@@ -181,8 +181,6 @@ namespace LoonyVM
                     case Opcode.Cmp:
                         var cmpValL = _instruction.Left.Get();
                         var cmpValR = _instruction.Right.Get();
-
-                        Console.WriteLine("{0} ({1})", (char)cmpValL, cmpValL);
 
                         _flags = Flags.None;
                         if (cmpValL == 0)

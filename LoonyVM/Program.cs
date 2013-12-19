@@ -37,7 +37,9 @@ namespace LoonyVM
             while (Window.IsOpen())
             {
                 Window.DispatchEvents();
-                Machine.Step();
+
+                for (var i = 0; i < 20000; i++)
+                    Machine.Step();
 
                 Window.Clear();
                 Window.Draw(display);

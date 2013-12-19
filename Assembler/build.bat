@@ -1,3 +1,3 @@
 @echo off
 if not defined include set include=include
-fasm test.asm test.bin
+fasm test.asm ../LoonyVM/bin/Debug/test.bin
