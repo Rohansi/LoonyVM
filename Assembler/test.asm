@@ -1,7 +1,7 @@
 include 'loonyvm.inc'
 
 halt:
-	rand word r0
+	rand r0
 	invoke itoa, r0, itoaBuffer1
 	invoke strlen, itoaBuffer1
 	invoke puts, str1
@@ -10,7 +10,7 @@ halt:
 	invoke strlen, itoaBuffer1
 	invoke itoa, r0, itoaBuffer2
 	invoke puts, itoaBuffer2
-	invoke putc, 10
+	invoke putc, 32 ; space
 	jmp halt
 
 str1: db 'strlen("', 0
@@ -32,7 +32,7 @@ putc:
 	mov r2, [_termY]
 
 .backspaceCheck:
-	cmp r0, '\b'
+	cmp r0, 8 ; \b
 	jne .xCheck
 	dec r1
 	cmp r1, 0
@@ -63,7 +63,7 @@ putc:
 	invoke scroll
 	dec r2
 .newlineCheck:
-	cmp r0, 10
+	cmp r0, 10 ; \n
 	jne .write
 	xor r1, r1
 	inc r2
@@ -148,6 +148,32 @@ scroll:
 
 .return:
 	pop r3
+	pop r1
+	pop r0
+	pop bp
+	ret
+
+; void clear()
+clear:
+	push bp
+	mov bp, sp
+	push r0
+	push r1
+
+	.cnt = termSizeX * termSizeY
+	mov r0, termAddr
+	mov r1, .cnt
+
+@@:
+	mov word [r0], 0
+	add r0, 2
+	dec r1
+	jnz @b
+
+	mov [_termX], 0
+	mov [_termY], 0
+
+.return:
 	pop r1
 	pop r0
 	pop bp
