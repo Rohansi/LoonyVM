@@ -45,7 +45,7 @@ Instructions
 20  ABS     DST         Absolute value
 21  RETN    DST         Return from a subroutine and add DST to SP
 22  XCHG    DST, SRC    Exchange values
-23  CMPXCHG DST, SRC    ZF = R0 == DST. if ZF: DST = SRC else: R0 = DST
+23  CMPXCHG DST, SRC    EF = R0 == DST. if EF: DST = SRC else: R0 = DST
 
 All math instructions (including bitwise) change the zero flag based on the result (which will be stored in DST).
 
@@ -60,7 +60,7 @@ Memory Map
 --------------------
 00000000 -> 00000000  Unused
 00060000 -> 0006FFFF  Video Memory
-00070000 -> FFFFFFFF  Unused
+00070000 -> 7FFFFFFF  Unused
 
 Flags register
 --------------------

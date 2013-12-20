@@ -254,14 +254,14 @@ namespace LoonyVM
                         _instruction.Right.Set(xt);
                         break;
                     case Opcode.Cmpxchg:
-                        _flags &= ~Flags.Equal;
                         if (Registers[0] == _instruction.Left.Get())
                         {
-                            _flags |= Flags.Zero;
+                            _flags |= Flags.Equal;
                             _instruction.Left.Set(_instruction.Right.Get());
                         }
                         else
                         {
+                            _flags &= ~Flags.Equal;
                             Registers[0] = _instruction.Left.Get();
                         }
                         break;
