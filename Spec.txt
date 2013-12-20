@@ -10,39 +10,42 @@ SP      Stack pointer
 
 Instructions
 --------------------
-00  MOV   DST, SRC    Set
-01  ADD   DST, SRC    Add
-02  SUB   DST, SRC    Subtract
-03  MUL   DST, SRC    Multiply
-04  DIV   DST, SRC    Divide
-05  REM   DST, SRC    Remainder
-06  INC   DST         Increment
-07  DEC   DST         Decrement
-08  NOT   DST         Bitwise not
-09  AND   DST, SRC    Bitwise and
-0A  OR    DST, SRC    Bitwise or
-0B  XOR   DST, SRC    Bitwise xor
-0C  SHL   DST, SRC    Bit shift left
-0D  SHR   DST, SRC    Bit shift right
-0E  PUSH  DST         Pushes a value to the stack
-0F  POP   DST         Pops a value from the stack
-10  JMP   DST         Jump to location
-11  CALL  DST         Call a subroutine
-12  RET               Return from a subroutine
-13  CMP   DST, SRC    Compare two values, zero is only checked on DST
-14  JZ    DST         Jump if zero
-15  JNZ   DST         Jump if not zero
-16  JE    DST         Jump if equal
-17  JNE   DST         Jump if not equal
-18  JA    DST         Jump if above
-19  JAE   DST         Jump if above or equal
-1A  JB    DST         Jump if below
-1B  JBE   DST         Jump if below or equal
-1C  RAND  DST         Obtain a random number
-1D  INT   DST, SRC    Call interrupt
-1E  IRET  DST, SRC    Return from interrupt
-1F  IVT   DST         Set the location of the interrupt vector table
-20  ABS   DST         Absolute value
+00  MOV     DST, SRC    Set
+01  ADD     DST, SRC    Add
+02  SUB     DST, SRC    Subtract
+03  MUL     DST, SRC    Multiply
+04  DIV     DST, SRC    Divide
+05  REM     DST, SRC    Remainder
+06  INC     DST         Increment
+07  DEC     DST         Decrement
+08  NOT     DST         Bitwise not
+09  AND     DST, SRC    Bitwise and
+0A  OR      DST, SRC    Bitwise or
+0B  XOR     DST, SRC    Bitwise xor
+0C  SHL     DST, SRC    Bit shift left
+0D  SHR     DST, SRC    Bit shift right
+0E  PUSH    DST         Pushes a value to the stack
+0F  POP     DST         Pops a value from the stack
+10  JMP     DST         Jump to location
+11  CALL    DST         Call a subroutine
+12  RET                 Return from a subroutine
+13  CMP     DST, SRC    Compare two values, zero is only checked on DST
+14  JZ      DST         Jump if zero
+15  JNZ     DST         Jump if not zero
+16  JE      DST         Jump if equal
+17  JNE     DST         Jump if not equal
+18  JA      DST         Jump if above
+19  JAE     DST         Jump if above or equal
+1A  JB      DST         Jump if below
+1B  JBE     DST         Jump if below or equal
+1C  RAND    DST         Obtain a random number
+1D  INT     DST, SRC    Call interrupt
+1E  IRET    DST, SRC    Return from interrupt
+1F  IVT     DST         Set the location of the interrupt vector table
+20  ABS     DST         Absolute value
+21  RETN    DST         Return from a subroutine and add DST to SP
+22  XCHG    DST, SRC    Exchange values
+23  CMPXCHG DST, SRC    ZF = R0 == DST. if ZF: DST = SRC else: R0 = DST
 
 All math instructions (including bitwise) change the zero flag based on the result (which will be stored in DST).
 

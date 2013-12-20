@@ -248,6 +248,23 @@ namespace LoonyVM
                         IP = Pop();
                         SP += _instruction.Left.Get();
                         break;
+                    case Opcode.Xchg:
+                        var xt = _instruction.Left.Get();
+                        _instruction.Left.Set(_instruction.Right.Get());
+                        _instruction.Right.Set(xt);
+                        break;
+                    case Opcode.Cmpxchg:
+                        _flags &= ~Flags.Equal;
+                        if (Registers[0] == _instruction.Left.Get())
+                        {
+                            _flags |= Flags.Zero;
+                            _instruction.Left.Set(_instruction.Right.Get());
+                        }
+                        else
+                        {
+                            Registers[0] = _instruction.Left.Get();
+                        }
+                        break;
                     default:
                         throw new VirtualMachineException(_errorIp, "Invalid opcode");
                 }

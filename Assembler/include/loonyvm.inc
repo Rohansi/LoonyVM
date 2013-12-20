@@ -36,40 +36,42 @@ ip equ rip
 @immw = 0x0E
 @immd = 0x0F
 
-@mov = 0x00
-@add = 0x01
-@sub = 0x02
-@mul = 0x03
-@div = 0x04
-@rem = 0x05
-@inc = 0x06
-@dec = 0x07
-@not = 0x08
-@and = 0x09
-@or  = 0x0A
-@xor = 0x0B
-@shl = 0x0C
-@shr = 0x0D
-@push= 0x0E
-@pop = 0x0F
-@jmp = 0x10
-@call= 0x11
-@ret = 0x12
-@cmp = 0x13
-@jz  = 0x14
-@jnz = 0x15
-@je  = 0x16
-@jne = 0x17
-@ja  = 0x18
-@jae = 0x19
-@jb  = 0x1A
-@jbe = 0x1B
-@rand= 0x1C
-@int = 0x1D
-@iret= 0x1E
-@ivt = 0x1F
-@abs = 0x20
-@retn= 0x21 
+@mov     = 0x00
+@add     = 0x01
+@sub     = 0x02
+@mul     = 0x03
+@div     = 0x04
+@rem     = 0x05
+@inc     = 0x06
+@dec     = 0x07
+@not     = 0x08
+@and     = 0x09
+@or      = 0x0A
+@xor     = 0x0B
+@shl     = 0x0C
+@shr     = 0x0D
+@push    = 0x0E
+@pop     = 0x0F
+@jmp     = 0x10
+@call    = 0x11
+@ret     = 0x12
+@cmp     = 0x13
+@jz      = 0x14
+@jnz     = 0x15
+@je      = 0x16
+@jne     = 0x17
+@ja      = 0x18
+@jae     = 0x19
+@jb      = 0x1A
+@jbe     = 0x1B
+@rand    = 0x1C
+@int     = 0x1D
+@iret    = 0x1E
+@ivt     = 0x1F
+@abs     = 0x20
+@retn    = 0x21 
+@xchg    = 0x22
+@cmpxchg = 0x23
 
 macro _pParseOperand value {
 	define v value
@@ -269,7 +271,7 @@ macro _pInstruction0 opcode {
 	db @b0, @b1, @b2, @b3
 }
 
-irps instr, mov add sub mul div rem and or xor shl shr cmp { 
+irps instr, mov add sub mul div rem and or xor shl shr cmp xchg cmpxchg { 
 	macro instr a,b \{
 		_pInstruction2 @\#instr,a,b
 	\} 
