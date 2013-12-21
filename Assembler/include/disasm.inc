@@ -135,9 +135,6 @@ disassemble:
     mov r3, [r4 + disasmTypeLookup]
     call .write
 
-    mov byte [r1], ' '
-    inc r1
-
     mov r5, [r7 + 3]
     and r5, 00001000b
 
