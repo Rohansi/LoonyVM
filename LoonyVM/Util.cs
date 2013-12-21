@@ -39,5 +39,10 @@ namespace LoonyVM
             buffer[offset + 2] = (byte)((value >> 16) & 0xFF);
             buffer[offset + 3] = (byte)((value >> 24) & 0xFF);
         }
+
+        public static float Clamp(int value, int min, int max)
+        {
+            return (value < min) ? min : ((value > max) ? max : value);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SFML.Graphics;
 using SFML.Window;
 
@@ -35,17 +36,29 @@ namespace LoonyVM
             var display = new Devices.Display(Machine, Window);
             Machine.Attach(display);
 
+            var timer = new Devices.Timer();
+            Machine.Attach(timer);
+
+            var stepThread = new Thread(() =>
+            {
+                while (Window.IsOpen())
+                {
+                    Machine.Step();
+                }
+            });
+
+            stepThread.Start();
+
             while (Window.IsOpen())
             {
                 Window.DispatchEvents();
-
-                for (var i = 0; i < 20000; i++)
-                    Machine.Step();
 
                 Window.Clear();
                 Window.Draw(display);
                 Window.Display();
             }
+
+            timer.Dispose();
         }
     }
 }

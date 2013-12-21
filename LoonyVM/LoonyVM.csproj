@@ -83,6 +83,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Devices\Timer.cs" />
     <Compile Include="IDevice.cs" />
     <Compile Include="Devices\Display.cs" />
     <Compile Include="Instruction.cs" />

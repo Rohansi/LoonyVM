@@ -1,26 +1,39 @@
 include 'loonyvm.inc'
 
-@@:
-	rand byte r1
-	rand byte r2
-	invoke puts, str1
-	invoke itoa, byte r1, itoaBuffer1
-	invoke puts, itoaBuffer1
-	invoke puts, str2
-	invoke itoa, byte r2, itoaBuffer2
-	invoke puts, itoaBuffer2
-	invoke puts, str3
-	invoke strcmp, itoaBuffer1, itoaBuffer2
-	invoke itoa, r0, itoaBuffer1
-	invoke puts, itoaBuffer1
-	invoke putc, 10
-	jmp @b
+; setup interrupts
+ivt interruptTable
+sti
 
-str1: db 'strcmp("', 0
-str2: db '", "', 0
-str3: db '") = ', 0
-itoaBuffer1: db '-1234567890', 0
-itoaBuffer2: db '-1234567890', 0
+; set timer interrupt to 100hz
+mov r0, 1
+mov r1, 100
+int 1
+
+; enable timer
+mov r0, 0
+mov r1, 1
+int 1
+
+@@:
+    cli
+    invoke puts, msgCode
+    sti
+    jmp @b
+
+msgCode: db 'normal code', 0
+
+timerHandler:
+    invoke puts, msgTimer
+    iret
+
+msgTimer: db 'TIMER INTERRUPT', 0
+
+
+interruptTable:
+    dd 0
+    dd timerHandler
+    rd 30
 
 include 'lib/string.asm'
 include 'lib/term.asm'
+
