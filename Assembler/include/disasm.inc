@@ -1,7 +1,9 @@
 
 ; disassemble the instruction at addr into str
 ; str should at least be 75 bytes long
-; bool disassemble(void* addr, byte* str)
+; returns the length of the instruction (not the string) or 0 on error 
+;
+; int disassemble(void* addr, byte* str)
 disassemble:
     push bp
     mov bp, sp
