@@ -5,7 +5,7 @@ namespace LoonyVM
     public partial class VirtualMachine
     {
         [Flags]
-        private enum Flags : byte
+        private enum Flags
         {
             Zero = 1 << 0,
             Equal = 1 << 1,
@@ -76,7 +76,7 @@ namespace LoonyVM
             {
                 if (_ivt != 0 && !_interrupted)
                 {
-                    for (var i = 0; i < _devices.Length; i++)
+                    for (var i = 0; i < _devices.Length; i++)   
                     {
                         var device = _devices[i];
                         if (device == null || !device.InterruptRequest)
@@ -89,7 +89,6 @@ namespace LoonyVM
                 }
 
                 _instruction.Decode();
-                //Console.WriteLine(_instruction);
 
                 int result;
                 switch (_instruction.Opcode)
@@ -240,9 +239,7 @@ namespace LoonyVM
                         _ivt = _instruction.Left.Get();
                         break;
                     case Opcode.Abs:
-                        result = Math.Abs(_instruction.Left.Get());
-                        _instruction.Left.Set(result);
-                        SetZero(result);
+                        _instruction.Left.Set(Math.Abs(_instruction.Left.Get()));
                         break;
                     case Opcode.Retn:
                         IP = Pop();
@@ -266,16 +263,17 @@ namespace LoonyVM
                         }
                         break;
                     default:
-                        throw new VirtualMachineException(_errorIp, "Invalid opcode");
+                        Exception(ExceptionCode.InvalidOpcode);
+                        break;
                 }
             }
-            catch (IndexOutOfRangeException e)
+            catch (IndexOutOfRangeException)
             {
-                throw new VirtualMachineException(_errorIp, "Out of memory bounds", e);
+                Exception(ExceptionCode.MemoryBounds);
             }
-            catch (DivideByZeroException e)
+            catch (DivideByZeroException)
             {
-                throw new VirtualMachineException(_errorIp, "Divide by zero", e);
+                Exception(ExceptionCode.DivideByZero);
             }
             catch (VirtualMachineException)
             {
@@ -289,6 +287,12 @@ namespace LoonyVM
 
         public void Interrupt(byte index)
         {
+            if (_ivt == 0)
+                throw new VirtualMachineException(_errorIp, "Can't interrupt when they are disabled");
+
+            if (_interrupted)
+                throw new VirtualMachineException(_errorIp, "Can't interrupt while interrupted");
+
             Push((int)_flags);
 
             for (var i = Registers.Length - 1; i >= 0; i--)

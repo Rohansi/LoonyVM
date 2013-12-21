@@ -33,6 +33,7 @@ namespace LoonyVM
                 Machine.Memory[i] = prog[i];
 
             var display = new Devices.Display(Machine, Window);
+            Machine.Attach(display);
 
             while (Window.IsOpen())
             {
