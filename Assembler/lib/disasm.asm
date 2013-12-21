@@ -275,7 +275,11 @@ disasmInstrLookup:
     dd disasmRetn      ; 21
     dd disasmXchg      ; 22
     dd disasmCmpxchg   ; 23
-disasmInstrCount     = 0x23
+    dd disasmPusha     ; 24
+    dd disasmPopa      ; 25
+    dd disasmSti       ; 26
+    dd disasmCli       ; 27
+disasmInstrCount     = 0x27
 
 disasmRegLookup:
     dd disasmR0        ; 00
@@ -336,6 +340,10 @@ disasmOperandLookup:
     db 1               ; retn
     db 2               ; xchg
     db 2               ; cmpxchg
+    db 0               ; pusha
+    db 0               ; popa
+    db 0               ; sti
+    db 0               ; cli
 
 disasmMov:        db 'mov', 0
 disasmAdd:        db 'add', 0
@@ -373,6 +381,10 @@ disasmAbs:        db 'abs', 0
 disasmRetn:       db 'retm', 0
 disasmXchg:       db 'xchg', 0
 disasmCmpxchg:    db 'cmpxchg', 0
+disasmPusha:      db 'pusha', 0
+disasmPopa:       db 'popa', 0
+disasmSti:        db 'sti', 0
+disasmCli:        db 'cli', 0
 
 disasmR0:         db 'r0', 0
 disasmR1:         db 'r1', 0

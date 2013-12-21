@@ -46,6 +46,10 @@ Instructions
 21  RETN    DST         Return from a subroutine and add DST to SP
 22  XCHG    DST, SRC    Exchange values
 23  CMPXCHG DST, SRC    EF = R0 == DST. if EF: DST = SRC else: R0 = DST
+24  PUSHA               Push all general purpose registers
+25  POPA                Pop all general purpose registers
+26  STI                 Enable interrupts
+27  CLI                 Disable interrupts
 
 All math instructions (including bitwise) change the zero flag based on the result (which will be stored in DST).
 

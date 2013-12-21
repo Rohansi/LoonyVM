@@ -35,6 +35,7 @@ namespace LoonyVM
 
         private Flags _flags;
         private Instruction _instruction;
+        private bool _interruptsEnabled;
         private bool _interrupted;
         private int _ivt;
         private IDevice[] _devices;
@@ -53,6 +54,7 @@ namespace LoonyVM
 
             _flags = Flags.None;
             _instruction = new Instruction(this);
+            _interruptsEnabled = false;
             _interrupted = false;
             _ivt = 0;
             _devices = new IDevice[32];
@@ -74,7 +76,7 @@ namespace LoonyVM
 
             try
             {
-                if (_ivt != 0 && !_interrupted)
+                if (_interruptsEnabled && _ivt != 0 && !_interrupted)
                 {
                     for (var i = 0; i < _devices.Length; i++)   
                     {
@@ -89,6 +91,7 @@ namespace LoonyVM
                 }
 
                 _instruction.Decode();
+                //Console.WriteLine(_instruction);
 
                 int result;
                 switch (_instruction.Opcode)
@@ -261,6 +264,24 @@ namespace LoonyVM
                             _flags &= ~Flags.Equal;
                             Registers[0] = _instruction.Left.Get();
                         }
+                        break;
+                    case Opcode.Pusha:
+                        for (var i = 9; i >= 0; i--)
+                        {
+                            Push(Registers[i]);
+                        }
+                        break;
+                    case Opcode.Popa:
+                        for (var i = 0; i <= 9; i++)
+                        {
+                            Registers[i] = Pop();
+                        }
+                        break;
+                    case Opcode.Sti:
+                        _interruptsEnabled = true;
+                        break;
+                    case Opcode.Cli:
+                        _interruptsEnabled = false;
                         break;
                     default:
                         Exception(ExceptionCode.InvalidOpcode);

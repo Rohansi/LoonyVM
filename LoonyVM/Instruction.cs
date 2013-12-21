@@ -8,7 +8,7 @@ namespace LoonyVM
         Mov, Add, Sub, Mul, Div, Rem, Inc, Dec, Not, And, Or,
         Xor, Shl, Shr, Push, Pop, Jmp, Call, Ret, Cmp, Jz, Jnz,
         Je, Jne, Ja, Jae, Jb, Jbe, Rand, Int, Iret, Ivt, Abs, 
-        Retn, Xchg, Cmpxchg, None
+        Retn, Xchg, Cmpxchg, Pusha, Popa, Sti, Cli, None
     }
 
     public class Instruction
@@ -135,7 +135,11 @@ namespace LoonyVM
             { Opcode.Abs,     1 },
             { Opcode.Retn,    1 },
             { Opcode.Xchg,    2 },
-            { Opcode.Cmpxchg, 2 }
+            { Opcode.Cmpxchg, 2 },
+            { Opcode.Pusha,   0 },
+            { Opcode.Popa,    0 }, 
+            { Opcode.Sti,     0 },
+            { Opcode.Cli,     0 }
         };
     }
 }
