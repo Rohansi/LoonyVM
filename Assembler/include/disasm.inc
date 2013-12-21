@@ -5,29 +5,29 @@
 disassemble:
     push bp
     mov bp, sp
-    push r0
     push r1
     push r2
     push r3
     push r4
     push r5
     push r6
+    push r7
 
-    mov r0, [bp + 8]   ; addr
     mov r1, [bp + 12]  ; str
     ;   r2             ; operandCount
     ;   r3             ; writeSrc
     ;   r4             ; temp
     ;   r5             ; ptr
     mov r6, 4          ; payload offset
+    mov r7, [bp + 8]   ; addr
 
-    invoke ptoa, r0, r1
+    invoke ptoa, r7, r1
     add r1, 8
     
     mov word [r1], ': '
     add r1, 2
 
-    mov r2, [r0]
+    mov r2, [r7]
     and r2, 0xFF
     cmp r2, disasmInstrCount
     ja .error
@@ -45,7 +45,7 @@ disassemble:
     mov byte [r1], ' '
     inc r1
 
-    mov r4, [r0 + 3]
+    mov r4, [r7 + 3]
     and r4, 00110000b
     shr r4, 4
     cmp r4, disasmTypeCount
@@ -54,10 +54,7 @@ disassemble:
     mov r3, [r4 + disasmTypeLookup]
     call .write
 
-    mov byte [r1], ' '
-    inc r1
-
-    mov r5, [r0 + 3]
+    mov r5, [r7 + 3]
     and r5, 10000000b
 
     cmp r5, r5
@@ -66,10 +63,10 @@ disassemble:
     inc r1
 @@:
 
-    mov r4, [r0 + 3]
+    mov r4, [r7 + 3]
     and r4, 01000000b
     jz @f
-    mov r4, [r0 + 2]
+    mov r4, [r7 + 2]
     and r4, 0xF0
     shr r4, 4
     cmp r4, disasmRegCount
@@ -81,7 +78,7 @@ disassemble:
     call .write
 
 @@:
-    mov r4, [r0 + 1]
+    mov r4, [r7 + 1]
     and r4, 0xF0
     shr r4, 4
     cmp r4, disasmRegCount
@@ -94,7 +91,7 @@ disassemble:
 .lopImm:
     cmp r4, 0x0D
     jne .lopWord
-    mov byte r4, byte [r0 + r6]
+    mov byte r4, byte [r7 + r6]
     inc r6 ; sizeof(byte)
     invoke itoa, byte r4, disasmItoa
     mov r3, disasmItoa
@@ -103,14 +100,14 @@ disassemble:
 .lopWord:
     cmp r4, 0x0E
     jne .lopDword
-    mov word r4, word [r0 + r6]
+    mov word r4, word [r7 + r6]
     add r6, 2 ; sizeof(word)
     invoke itoa, word r4, disasmItoa
     mov r3, disasmItoa
     call .write
     jmp @f
 .lopDword:
-    mov r4, [r0 + r6]
+    mov r4, [r7 + r6]
     add r6, 4 ; sizeof(dword)
     invoke itoa, r4, disasmItoa
     mov r3, disasmItoa
@@ -130,7 +127,7 @@ disassemble:
     mov word [r1], ', '
     add r1, 2
 
-    mov r4, [r0 + 3]
+    mov r4, [r7 + 3]
     and r4, 00000011b
     cmp r4, disasmTypeCount
     ja .error
@@ -141,7 +138,7 @@ disassemble:
     mov byte [r1], ' '
     inc r1
 
-    mov r5, [r0 + 3]
+    mov r5, [r7 + 3]
     and r5, 00001000b
 
     cmp r5, r5
@@ -150,10 +147,10 @@ disassemble:
     inc r1
 @@:
 
-    mov r4, [r0 + 3]
+    mov r4, [r7 + 3]
     and r4, 00000100b
     jz @f
-    mov r4, [r0 + 2]
+    mov r4, [r7 + 2]
     and r4, 0x0F
     cmp r4, disasmRegCount
     ja .error
@@ -164,7 +161,7 @@ disassemble:
     call .write
 
 @@:
-    mov r4, [r0 + 1]
+    mov r4, [r7 + 1]
     and r4, 0x0F
     cmp r4, disasmRegCount
     ja .ropImm
@@ -176,7 +173,7 @@ disassemble:
 .ropImm:
     cmp r4, 0x0D
     jne .ropWord
-    mov byte r4, byte [r0 + r6]
+    mov byte r4, byte [r7 + r6]
     inc r6 ; sizeof(byte)
     invoke itoa, byte r4, disasmItoa
     mov r3, disasmItoa
@@ -185,14 +182,14 @@ disassemble:
 .ropWord:
     cmp r4, 0x0E
     jne .ropDword
-    mov word r4, word [r0 + r6]
+    mov word r4, word [r7 + r6]
     add r6, 2 ; sizeof(word)
     invoke itoa, word r4, disasmItoa
     mov r3, disasmItoa
     call .write
     jmp @f
 .ropDword:
-    mov r4, [r0 + r6]
+    mov r4, [r7 + r6]
     add r6, 4 ; sizeof(dword)
     invoke itoa, r4, disasmItoa
     mov r3, disasmItoa
@@ -207,7 +204,7 @@ disassemble:
 .done:
     xor byte [r1], byte [r1] ; null terminator
 
-    mov r0, 1
+    mov r0, r6
     jmp .return
 
 ; mini-function to write output strings
@@ -227,13 +224,13 @@ disassemble:
     xor r0, r0
 
 .return:
+    pop r7
     pop r6
     pop r5
     pop r4
     pop r3
     pop r2
     pop r1
-    pop r0
     pop bp
     retn 8
 
@@ -392,6 +389,6 @@ disasmBP:         db 'bp', 0
 disasmIP:         db 'ip', 0
 disasmSP:         db 'sp', 0
 
-disasmByte:       db 'byte', 0
-disasmWord:       db 'word', 0
-disasmDword:      db 'dword', 0
+disasmByte:       db 'byte ', 0
+disasmWord:       db 'word ', 0
+disasmDword:      db 0 ; dword is default

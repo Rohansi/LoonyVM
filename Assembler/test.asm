@@ -1,7 +1,9 @@
 include 'loonyvm.inc'
 
 ivt interruptTable
-;cmpxchg dword [r0 + -2147483648], dword [r0 + 2147483647]
+
+; long instruction to play with
+;cmpxchg word [r0 + -2147483648], word [r0 + -2147483648]
 
 @@:
 	rand byte r0
@@ -25,6 +27,7 @@ itoaBuffer: db '-1234567890', 0
 exceptionHandler:
 	mov bp, sp
 
+	invoke putc, 10
 .invalidOpcode:
 	cmp r0, 0
 	jne .divByZero
@@ -45,13 +48,22 @@ exceptionHandler:
 @@:
 	invoke putc, ':'
 	invoke putc, 10
-	invoke disassemble, [bp + (0xB * 4)], disasmBuffer
+
+	mov r1, [bp + (0xB * 4)]
+	mov r2, 5
+@@:
+	invoke disassemble, r1, disasmBuffer
 	cmp r0, r0
 	jz .error
 	invoke puts, disasmBuffer
+	invoke putc, 10
+	add r1, r0
+	dec r2
+	jnz @b
 	jmp .return
 .error:
 	invoke puts, msgDisasmError
+
 .return:
 	jmp $ ; hang, returning will not help
 
