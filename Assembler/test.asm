@@ -1,189 +1,75 @@
 include 'loonyvm.inc'
 
-halt:
-	rand r0
-	invoke itoa, r0, itoaBuffer1
-	invoke strlen, itoaBuffer1
-	invoke puts, str1
-	invoke puts, itoaBuffer1
-	invoke puts, str2
-	invoke strlen, itoaBuffer1
-	invoke itoa, r0, itoaBuffer2
-	invoke puts, itoaBuffer2
-	invoke putc, 32 ; space
-	jmp halt
+ivt interruptTable
+;cmpxchg dword [r0 + -2147483648], dword [r0 + 2147483647]
 
-str1: db 'strlen("', 0
-str2: db '") = ', 0
-itoaBuffer1: db '-1234567890', 0
-itoaBuffer2: db '-1234567890', 0
-
-; void putc(byte c)
-putc:
-	push bp
-	mov bp, sp
-	push r0
-	push r1
-	push r2
-	push r3
-
-	mov r0, byte [bp + 8]
-	mov r1, [_termX]
-	mov r2, [_termY]
-
-.backspaceCheck:
-	cmp r0, 8 ; \b
-	jne .xCheck
-	dec r1
-	cmp r1, 0
-	jae .backspaceClear
-.backspaceUpLine:
-	mov r1, termSizeX - 1
-	dec r2
-	cmp r2, 0
-	jae .backspaceClear
-	xor r1, r1
-	xor r2, r2
-.backspaceClear:
-	mov r3, r2         ; ptr = termAddr + ((y * termSizeX) + x) * 2
-	mul r3, termSizeX
-	add r3, r1
-	mul r3, 2
-	add r3, termAddr
-	mov word [r3], 0
-	jmp .end
-.xCheck:
-	cmp r1, termSizeX
-	jb .yCheck
-	xor r1, r1
-	inc r2
-.yCheck:
-	cmp r2, termSizeY
-	jb .newlineCheck
-	invoke scroll
-	dec r2
-.newlineCheck:
-	cmp r0, 10 ; \n
-	jne .write
-	xor r1, r1
-	inc r2
-	cmp r2, termSizeY
-	jb .end
-	invoke scroll
-	dec r2
-	jmp .end
-.write:
-	mov r3, r2         ; ptr = termAddr + ((y * termSizeX) + x) * 2
-	mul r3, termSizeX
-	add r3, r1
-	mul r3, 2
-	add r3, termAddr
-	mov byte [r3], r0
-	mov byte [r3 + 1], 0x0F ; white on black
-	inc r1
-.end:
-	mov [_termX], r1
-	mov [_termY], r2
-
-.return:
-	pop r3
-	pop r2
-	pop r1
-	pop r0
-	pop bp
-	retn 4
-
-; void puts(byte* str)
-puts:
-	push bp
-	mov bp, sp
-	push r0
-
-	mov r0, [bp + 8]
 @@:
-	cmp byte [r0], 0
-	jz .return
-	invoke putc, byte [r0]
-	inc r0
+	rand byte r0
+	rand byte r1
+	invoke itoa, byte r0, itoaBuffer
+	invoke puts, itoaBuffer
+	invoke puts, strDiv
+	invoke itoa, byte r1, itoaBuffer
+	invoke puts, itoaBuffer
+	invoke puts, strEq
+	div byte r0, byte r1
+	invoke itoa, byte r0, itoaBuffer
+	invoke puts, itoaBuffer
+	invoke putc, 10
 	jmp @b
 
-.return:
-	pop r0
-	pop bp
-	retn 4
+strDiv: db ' / ', 0
+strEq: db ' = ', 0
+itoaBuffer: db '-1234567890', 0
 
-; void scroll()
-scroll:
-	push bp
+exceptionHandler:
 	mov bp, sp
-	push r0
-	push r1
-	push r3
 
-	; workaround for loonyvm.inc bug
-	.src = termAddr + (termSizeX * 2)
-	.dst = termAddr
-	.cnt = termSizeX * (termSizeY - 1)
-
-	mov r0, .src
-	mov r1, .dst
-	mov r3, .cnt
-
+.invalidOpcode:
+	cmp r0, 0
+	jne .divByZero
+	invoke puts, msgUnknownOpcode
+	jmp @f
+.divByZero:
+	cmp r0, 1
+	jne .memoryBounds
+	invoke puts, msgDivByZero
+	jmp @f
+.memoryBounds:
+	cmp r0, 2
+	jne .default
+	invoke puts, msgMemoryBounds
+	jmp @f
+.default:
+	invoke puts, msgUnknownException
 @@:
-	mov word [r1], word [r0]
-	add r0, 2
-	add r1, 2
-	dec r3
-	jnz @b
-
-	.dst = termAddr + ((termSizeY - 1) * termSizeX * 2)
-	.cnt = termSizeX
-	mov r0, .dst
-	mov r3, .cnt
-@@:
-	mov word [r0], 0
-	add r0, 2
-	dec r3
-	jnz @b
-
+	invoke putc, ':'
+	invoke putc, 10
+	invoke disassemble, [bp + (0xB * 4)], disasmBuffer
+	cmp r0, r0
+	jz .error
+	invoke puts, disasmBuffer
+	jmp .return
+.error:
+	invoke puts, msgDisasmError
 .return:
-	pop r3
-	pop r1
-	pop r0
-	pop bp
-	ret
+	jmp $ ; hang, returning will not help
 
-; void clear()
-clear:
-	push bp
-	mov bp, sp
-	push r0
-	push r1
 
-	.cnt = termSizeX * termSizeY
-	mov r0, termAddr
-	mov r1, .cnt
+; hardcoded interrupts best
+interruptTable:
+	dd exceptionHandler
+	rd 31
 
-@@:
-	mov word [r0], 0
-	add r0, 2
-	dec r1
-	jnz @b
 
-	mov [_termX], 0
-	mov [_termY], 0
+disasmBuffer: rb 75
 
-.return:
-	pop r1
-	pop r0
-	pop bp
-	ret
-	
-_termX: dd 0
-_termY: dd 0
-
-termAddr = 0x60000
-termSizeX = 80
-termSizeY = 25
+msgUnknownOpcode: db 'Unknown opcode', 0
+msgDivByZero: db 'Divide by zero', 0
+msgMemoryBounds: db 'Read/write out of memory bounds', 0
+msgUnknownException: db 'Unknown exception', 0
+msgDisasmError: db 'Disassemble failed', 0
 
 include 'string.inc'
+include 'term.inc'
+include 'disasm.inc'
