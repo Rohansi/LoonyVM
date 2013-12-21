@@ -60,7 +60,14 @@ Memory Map
 --------------------
 00000000 -> 00000000  Unused
 00060000 -> 0006FFFF  Video Memory
-00070000 -> 7FFFFFFF  Unused
+00070000 -> 0007FFFF  Unused
+00080000 -> 7FFFFFFF  Extended Memory (unused, may not be available)
+
+Devices
+--------------------
+00   System
+01   Timer
+06   Display
 
 Flags register
 --------------------
@@ -75,7 +82,7 @@ The internal flags register has a flag for each condition:
 Bytecode
 --------------------
 Instructions are assembled into the following format:
- AAAAAAAA BBBBCCCCC DDDDEEEE POTTPOTT <Payload, left first>
+ AAAAAAAA BBBBCCCC DDDDEEEE POTTPOTT <Payload, left first>
  
  A   Opcode (see first column in instructions)
  B,C Operand type
