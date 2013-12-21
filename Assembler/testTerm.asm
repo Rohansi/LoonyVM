@@ -18,5 +18,5 @@ str2: db '") = ', 0
 itoaBuffer1: db '-1234567890', 0
 itoaBuffer2: db '-1234567890', 0
 
-include 'string.inc'
-include 'term.inc'
+include 'lib/string.asm'
+include 'lib/term.asm'

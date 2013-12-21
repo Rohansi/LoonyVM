@@ -2,11 +2,11 @@
 macro invoke proc,[arg]
 {
 common
-	if ~ arg eq
+    if ~ arg eq
 reverse
-		push arg
+        push arg
 common
-	end if
-	call proc
+    end if
+    call proc
 }
 
