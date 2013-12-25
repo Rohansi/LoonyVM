@@ -1,39 +1,18 @@
 include 'loonyvm.inc'
+ 
+invoke_va printf, fmt, brian, 12345678, 0xDEADBEEF
+ 
+@@: jmp @b
+ 
+fmt: db 'hello %s!', 10, \
+        'heres a number: %i', 10, \
+        'and a pointer: %p', 10, \
+        'out of args: %s', 10, \
+        'bad format: %z', 10, \
+        'escape: %%', 0
 
-; setup interrupts
-ivt interruptTable
-sti
-
-; set timer interrupt to 100hz
-mov r0, 1
-mov r1, 100
-int 1
-
-; enable timer
-mov r0, 0
-mov r1, 1
-int 1
-
-@@:
-    cli
-    invoke puts, msgCode
-    sti
-    jmp @b
-
-msgCode: db 'normal code', 0
-
-timerHandler:
-    invoke puts, msgTimer
-    iret
-
-msgTimer: db 'TIMER INTERRUPT', 0
-
-
-interruptTable:
-    dd 0
-    dd timerHandler
-    rd 30
-
+brian: db 'brian', 0
+ 
 include 'lib/string.asm'
 include 'lib/term.asm'
-
+include 'lib/printf.asm'
