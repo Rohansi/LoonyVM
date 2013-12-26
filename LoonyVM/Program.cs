@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading;
 using SFML.Graphics;
 using SFML.Window;
@@ -38,6 +36,9 @@ namespace LoonyVM
 
             var timer = new Devices.Timer();
             Machine.Attach(timer);
+
+            var kbd = new Devices.Keyboard(Window);
+            Machine.Attach(kbd);
 
             var stepThread = new Thread(() =>
             {
