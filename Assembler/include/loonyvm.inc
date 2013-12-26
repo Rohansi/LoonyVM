@@ -84,6 +84,7 @@ macro _pParseOperand value {
     @operandType = 2
     @isPtr = 0
     @isOffset = 0
+    @isNegOffset = 0
     @offsetReg = 0
     @hasPayload = 0
     @payloadType = 2
@@ -109,16 +110,34 @@ macro _pParseOperand value {
         @isPtr = 1
     \}
     
-    match base + expr, v \{
+    match base + expr,v \{
         define v expr
         if base eqtype eax
     irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp ip sp \\{
             if base eq reg
                 @isOffset = 1
+                @isNegOffset = 0
                 @offsetReg = @\\#reg
             end if
     \\}
         else
+            display 'error: expression must be relative to a register', 10
+            assert 0
+        end if
+    \}
+
+    match base - expr,v \{
+        define v expr
+        if base eqtype eax
+    irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp ip sp \\{
+            if base eq reg
+                @isOffset = 1
+                @isNegOffset = 1
+                @offsetReg = @\\#reg
+            end if
+    \\}
+        else
+            display 'error: expression must be relative to a register', 10
             assert 0
         end if
     \}
@@ -129,11 +148,20 @@ macro _pParseOperand value {
         if 0 = 1
     irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp ip sp \\{
         else if expr eq reg
+            if @isNegOffset
+                display 'error: can not have negative register offset', 10
+                assert 0
+            end if
+
             @operand = @\\#reg
     \\}
         else
             @hasPayload = 1
             @a = dword expr
+
+            if @isNegOffset
+                @a = 0 - @a
+            end if
             
             if @a <= 127
                 @operand = @immb

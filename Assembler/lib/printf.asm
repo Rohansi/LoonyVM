@@ -16,15 +16,14 @@ printf:
     add r3, 4
     
     call printfImpl
-    jmp .return
-    
-.putc:
-    invoke putc, byte r8
-    ret
-    
+
 .return:
     popa
     pop bp
+    ret
+
+.putc:
+    invoke putc, byte r8
     ret
 
 ; void sprintf(byte* str, byte* fmt, ...)
@@ -46,16 +45,15 @@ sprintf:
     add r3, 8
     
     call printfImpl
-    jmp .return
-    
-.putc:
-    mov byte [r7], r8
-    inc r7
-    ret
     
 .return:
     popa
     pop bp
+    ret
+
+.putc:
+    mov byte [r7], r8
+    inc r7
     ret
 
 ; r1 = fmt
@@ -68,7 +66,7 @@ sprintf:
 printfImpl:
     push bp
     mov bp, sp
-    sub sp, 16 ; *toa buffers, bp + 8
+    sub sp, 16 ; *toa buffers, bp - 16
     
 .loop:
     cmp byte [r1], byte [r1]
@@ -122,8 +120,8 @@ printfImpl:
     mov r4, [r3]
     add r3, 4
     dec r2
-    invoke itoa, r4, bp + 8
-    mov r4, bp + 8
+    invoke itoa, r4, bp - 16
+    mov r4, bp - 16
 @@:
     cmp byte [r4], byte [r4]
     jz @f
@@ -141,8 +139,8 @@ printfImpl:
     mov r4, [r3]
     add r3, 4
     dec r2
-    invoke ptoa, r4, bp + 8
-    mov r4, bp + 8
+    invoke ptoa, r4, bp - 16
+    mov r4, bp - 16
 @@:
     cmp byte [r4], byte [r4]
     jz @f

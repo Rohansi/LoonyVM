@@ -21,7 +21,8 @@ putc:
     cmp r1, 0
     jae .backspaceClear
 .backspaceUpLine:
-    mov r1, termSizeX - 1
+    .exp = termSizeX - 1
+    mov r1, .exp
     dec r2
     cmp r2, 0
     jae .backspaceClear

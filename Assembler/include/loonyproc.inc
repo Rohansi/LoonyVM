@@ -13,16 +13,16 @@ common
 macro invoke_va proc,[arg]
 {
 common
-    @count = 0
+    @cnt = 1
     if ~ arg eq
 reverse
-    push arg
-    @count = @count + 1
+        push arg
+        @cnt = @cnt + 1
 common
     end if
-    push @count
+    push @cnt
     call proc
-    if @count
-        add sp, (@count * 4)
+    if @cnt
+        add sp, (@cnt * 4)
     end if
 }
