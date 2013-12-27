@@ -27,6 +27,7 @@ namespace LoonyVM.Devices
             _window = window;
 
             _textDisplay = new TextDisplay(80, 25);
+
             _graphicsDisplay = new GraphicsDisplay(320, 200);
             _graphicsDisplay.Scale = new Vector2f(2, 2);
 
@@ -74,7 +75,7 @@ namespace LoonyVM.Devices
                         }
                     }
 
-                    _textDisplay.Draw(target, new Vector2f());
+                    _textDisplay.Draw(target);
                     break;
                 }
 
