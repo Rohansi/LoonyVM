@@ -1,34 +1,30 @@
 include 'loonyvm.inc'
 
-; setup interrupts
-ivt interruptTable
-sti
+; laziest display demo
+; write all colors in the palette endlessly
 
-; enable keyboard
+; switch to graphics display
 mov r0, 0
 mov r1, 1
-int 2
+int 6
 
-jmp $
+xor r3, r3
 
-keyboardHandler:
-    cmp r0, r0
-    jz .return
-    cmp r1, 32
-    jb .return
-    cmp r1, 127
-    ja .return
+draw:
+	.cnt = screenSizeX * screenSizeY
+	mov r1, .cnt
+	mov r2, screenAddr
 
-    invoke putc, r1
+@@:
+	cmp r1, r1
+	jz draw
+	mov byte [r2], byte r3
+	dec r1
+	inc r2
+	inc r3
+	rem r3, 255
+	jmp @b
 
-.return:
-    iret
-
-interruptTable:
-    dd 0 ; cpu
-    dd 0 ; timer
-    dd keyboardHandler
-    rd 29
-
-include 'lib/string.asm'
-include 'lib/term.asm'
+screenAddr = 0x60000
+screenSizeX = 320
+screenSizeY = 200
