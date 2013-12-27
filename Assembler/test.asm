@@ -1,30 +1,53 @@
 include 'loonyvm.inc'
 
-; laziest display demo
-; write all colors in the palette endlessly
+; setup interrupts
+ivt interruptTable
+sti
 
-; switch to graphics display
+; enable keyboard
 mov r0, 0
 mov r1, 1
-int 6
+int 2
 
-xor r3, r3
+main:
+    invoke kbRead
 
-draw:
-	.cnt = screenSizeX * screenSizeY
-	mov r1, .cnt
-	mov r2, screenAddr
+    ; make sure we get an event
+    cmp r0, -1
+    je main
 
-@@:
-	cmp r1, r1
-	jz draw
-	mov byte [r2], byte r3
-	dec r1
-	inc r2
-	inc r3
-	rem r3, 255
-	jmp @b
+    ; filter out key releases
+    mov r1, r0
+    and r1, 0xFF00
+    jz main
 
-screenAddr = 0x60000
-screenSizeX = 320
-screenSizeY = 200
+    ; only care about printable characters
+    and r0, 0x00FF
+    cmp r0, 32
+    jb main
+    cmp r0, 127
+    ja main
+
+    int 0
+    invoke putc, r0
+
+    jmp main
+
+
+keyboardHandler:
+    mov r2, r0
+    shl r2, 8
+    or r2, r1
+    invoke kbWrite, word r2
+.return:
+    iret
+
+interruptTable:
+    dd 0 ; cpu
+    dd 0 ; timer
+    dd keyboardHandler
+    rd 29
+
+include 'lib/string.asm'
+include 'lib/term.asm'
+include 'lib/keyboard.asm'
