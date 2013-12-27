@@ -76,7 +76,7 @@ namespace LoonyVM
 
             try
             {
-                if (_interruptsEnabled && _ivt != 0 && !_interrupted)
+                if (_interruptsEnabled && !_interrupted)
                 {
                     for (var i = 0; i < _devices.Length; i++)   
                     {
@@ -308,7 +308,7 @@ namespace LoonyVM
 
         public void Interrupt(byte index)
         {
-            if (_ivt == 0)
+            if (!_interruptsEnabled)
                 throw new VirtualMachineException(_errorIp, "Can't interrupt when they are disabled");
 
             if (_interrupted)

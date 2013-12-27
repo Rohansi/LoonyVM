@@ -3,7 +3,7 @@
 ;  - upper 8 bits are state, lower 8 are scancode
 ;  - returns -1 if no events are available
 ; short kbRead()
-kbRead:
+kbDequeue:
 	push bp
 	mov bp, sp
 	cli
@@ -25,7 +25,7 @@ kbRead:
 ; enqueues a keyboard event
 ; should only be called by the keyboard irq
 ; void kbWrite(short event)
-kbWrite:
+kbEnqueue:
 	push bp
 	mov bp, sp
 	push r0
@@ -39,12 +39,42 @@ kbWrite:
 
 	invoke kbBuffWrite, r1
 
+	push r2
+	mov r2, r1
+	and r1, 0xFF
+	shr r2, 8
+	mov byte [r1 + kbStates], r2
+	pop r2
+
 .return:
 	pop r1
 	pop r0
 	pop bp
 	retn 4
 
+; check if a key is pressed
+; bool kbIsPressed(byte scancode)
+kbIsPressed:
+	push bp
+	mov bp, sp
+
+	mov r0, [bp + 8] ; scancode
+	and r0, 0xFF
+	mov r0, byte [r0 + kbStates]
+
+.return:
+	pop bp
+	retn 4
+
+kbStates: rb 256
+
+kbInterruptHandler:
+    mov r2, r0
+    shl r2, 8
+    or r2, r1
+    invoke kbEnqueue, word r2
+.return:
+    iret
 
 ; Circular buffer from:
 ; http://en.wikipedia.org/w/index.php?title=Circular_buffer&oldid=586699125#Always_Keep_One_Slot_Open

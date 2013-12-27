@@ -10,7 +10,13 @@ mov r1, 1
 int 2
 
 main:
-    invoke kbRead
+    invoke kbIsPressed, ' '
+    cmp r0, r0
+    jz @f
+    invoke puts, msgPressed
+
+@@:
+    invoke kbDequeue
 
     ; make sure we get an event
     cmp r0, -1
@@ -28,26 +34,17 @@ main:
     cmp r0, 127
     ja main
 
-    int 0
     invoke putc, r0
 
     jmp main
 
-
-keyboardHandler:
-    mov r2, r0
-    shl r2, 8
-    or r2, r1
-    invoke kbWrite, word r2
-.return:
-    iret
+msgPressed: db 'BOOP', 0
 
 interruptTable:
     dd 0 ; cpu
     dd 0 ; timer
-    dd keyboardHandler
+    dd kbInterruptHandler
     rd 29
 
-include 'lib/string.asm'
 include 'lib/term.asm'
 include 'lib/keyboard.asm'
