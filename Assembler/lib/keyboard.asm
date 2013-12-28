@@ -50,6 +50,8 @@ gets:
     mov r2, [bp + 12] ; maxLen
     xor r3, r3        ; len
 
+    dec r2 ; space for null
+
 .block:
     invoke getc
 
