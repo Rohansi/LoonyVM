@@ -317,9 +317,12 @@ namespace LoonyVM
             if (_interrupted)
                 throw new VirtualMachineException(_errorIp, "Can't interrupt while interrupted");
 
+            var sp = SP;
             Push((int)_flags);
+            Push(sp);
+            Push(IP);
 
-            for (var i = Registers.Length - 1; i >= 0; i--)
+            for (var i = 10; i >= 0; i--)
             {
                 Push(Registers[i]);
             }
@@ -331,12 +334,15 @@ namespace LoonyVM
 
         private void InterruptReturn()
         {
-            for (var i = 0; i < Registers.Length; i++)
+            for (var i = 0; i <= 10; i++)
             {
                 Registers[i] = Pop();
             }
 
+            IP = Pop();
+            var sp = Pop();
             _flags = (Flags)Pop();
+            SP = sp;
 
             _interrupted = false;
         }
