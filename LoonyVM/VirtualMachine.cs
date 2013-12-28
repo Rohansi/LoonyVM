@@ -78,7 +78,7 @@ namespace LoonyVM
             {
                 if (_interruptsEnabled && !_interrupted)
                 {
-                    for (var i = 0; i < _devices.Length; i++)   
+                    for (var i = 0; i < _devices.Length; i++)
                     {
                         var device = _devices[i];
                         if (device == null || !device.InterruptRequest)
@@ -284,9 +284,12 @@ namespace LoonyVM
                         _interruptsEnabled = false;
                         break;
                     default:
-                        Exception(ExceptionCode.InvalidOpcode);
-                        break;
+                        throw new VirtualMachineInvalidOpcode("Bad opcode id");
                 }
+            }
+            catch (VirtualMachineInvalidOpcode)
+            {
+                Exception(ExceptionCode.InvalidOpcode);
             }
             catch (IndexOutOfRangeException)
             {

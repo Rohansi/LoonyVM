@@ -56,7 +56,7 @@ namespace LoonyVM
                 case 0x2:
                     break;
                 default:
-                    throw new Exception("Invalid operand value type");
+                    throw new VirtualMachineInvalidOpcode("Invalid operand value type");
             }
 
             return value;
@@ -87,7 +87,7 @@ namespace LoonyVM
                 case 0x2:
                     return newValue;
                 default:
-                    throw new Exception("Invalid operand value type");
+                    throw new VirtualMachineInvalidOpcode("Invalid operand value type");
             }
         }
 
