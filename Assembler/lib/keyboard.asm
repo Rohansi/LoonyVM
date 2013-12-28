@@ -1,42 +1,4 @@
 
-; int getc()
-getc:
-    push bp
-    mov bp, sp
-    push r1
-    push r2
-
-.block:
-    invoke kbDequeue
-    cmp r0, -1
-    je .block
-
-    mov r1, r0
-    and r1, 0xFF00
-    jz .block
-
-    and r0, 0x00FF
-    mov r2, r0
-
-    invoke kbIsPressed, 130 ; LShift
-    cmp r0, r0
-    jnz .translate
-    invoke kbIsPressed, 134 ; RShift
-
-.translate:
-    mov r1, kbLowerMap
-    cmp r0, r0
-    jz @f
-    mov r1, kbUpperMap
-@@:
-    mov r0, byte [r1 + r2]
-
-.return:
-    pop r2
-    pop r1
-    pop bp
-    ret
-
 ; void gets(byte* str, int maxLen)
 gets:
     push bp
@@ -53,7 +15,7 @@ gets:
     dec r2 ; space for null
 
 .block:
-    invoke getc
+    call getcInternal
 
 .checkEnter:
     cmp r0, 10 ; \n
@@ -100,6 +62,40 @@ gets:
     pop r0
     pop bp
     retn 8
+
+getcInternal:
+    push r1
+    push r2
+
+.block:
+    invoke kbDequeue
+    cmp r0, -1
+    je .block
+
+    mov r1, r0
+    and r1, 0xFF00
+    jz .block
+
+    and r0, 0x00FF
+    mov r2, r0
+
+    invoke kbIsPressed, 130 ; LShift
+    cmp r0, r0
+    jnz .translate
+    invoke kbIsPressed, 134 ; RShift
+
+.translate:
+    mov r1, kbLowerMap
+    cmp r0, r0
+    jz @f
+    mov r1, kbUpperMap
+@@:
+    mov r0, byte [r1 + r2]
+
+.return:
+    pop r2
+    pop r1
+    ret
 
 ; reads a keyboard event
 ;  - upper 8 bits are state, lower 8 are scancode
