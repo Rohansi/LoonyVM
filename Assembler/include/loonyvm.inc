@@ -3,6 +3,8 @@
 format binary as 'bin'
 
 include 'loonyproc.inc'
+include 'struct.inc'
+include 'if.inc'
 
 r0 equ eax
 r1 equ rax
