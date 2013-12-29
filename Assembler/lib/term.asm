@@ -1,8 +1,8 @@
 
 
 ; print a character to the terminal
-; void putc(byte c)
-putc:
+; void printChar(byte c)
+printChar:
     push bp
     mov bp, sp
     push r0
@@ -44,7 +44,7 @@ putc:
 .yCheck:
     cmp r2, termSizeY
     jb .newlineCheck
-    invoke scroll
+    invoke termScroll
     dec r2
 .newlineCheck:
     cmp r0, 10 ; \n
@@ -53,7 +53,7 @@ putc:
     inc r2
     cmp r2, termSizeY
     jb .end
-    invoke scroll
+    invoke termScroll
     dec r2
     jmp .end
 .write:
@@ -78,8 +78,8 @@ putc:
     retn 4
 
 ; print a string to the terminal
-; void puts(byte* str)
-puts:
+; void printString(byte* str)
+printString:
     push bp
     mov bp, sp
     push r0
@@ -88,7 +88,7 @@ puts:
 @@:
     cmp byte [r0], 0
     jz .return
-    invoke putc, byte [r0]
+    invoke printChar, byte [r0]
     inc r0
     jmp @b
 
@@ -99,7 +99,7 @@ puts:
 
 ; scroll the terminal up one line
 ; void scroll()
-scroll:
+termScroll:
     push bp
     mov bp, sp
     push r0
@@ -141,7 +141,7 @@ scroll:
 
 ; clear the terminal
 ; void clear()
-clear:
+termClear:
     push bp
     mov bp, sp
     push r0

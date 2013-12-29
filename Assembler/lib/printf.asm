@@ -6,7 +6,7 @@ printf:
     
     mov r2, [bp + 8] ; arg count
     mov r3, bp + 12  ; arg offset
-    mov r9, .putc    ; putc func
+    mov r9, .printc  ; printc func
     
     cmp r2, 1
     jb .return
@@ -22,8 +22,8 @@ printf:
     pop bp
     ret
 
-.putc:
-    invoke putc, byte r8
+.printc:
+    invoke printChar, byte r8
     ret
 
 ; void sprintf(byte* str, byte* fmt, ...)
@@ -34,7 +34,7 @@ sprintf:
     
     mov r2, [bp + 8]  ; arg count
     mov r3, bp + 12   ; arg offset
-    mov r9, .putc     ; putc func
+    mov r9, .printc   ; printc func
     
     cmp r2, 2
     jb .return
@@ -51,7 +51,7 @@ sprintf:
     pop bp
     ret
 
-.putc:
+.printc:
     mov byte [r7], r8
     inc r7
     ret
@@ -62,7 +62,7 @@ sprintf:
 ; r4 = temp
 ; r7 = reserved
 ; r8 = reserved
-; r9 = putc func (r8 = c)
+; r9 = printc func (r8 = c)
 printfImpl:
     push bp
     mov bp, sp

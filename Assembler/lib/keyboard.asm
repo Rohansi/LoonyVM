@@ -1,6 +1,6 @@
 
-; void gets(byte* str, int maxLen)
-gets:
+; void readString(byte* str, int maxLen)
+readString:
     push bp
     mov bp, sp
     push r0
@@ -32,14 +32,14 @@ gets:
     pop r1
     pop r0
 
-    call getcInternal
+    call kbWaitChar
 
 .checkEnter:
     cmp r0, 10 ; \n
     jne .checkBackspace
 
     xor byte [r1 + r3], byte [r1 + r3]
-    invoke putc, r0
+    invoke printChar, r0
     jmp .return
 
 .checkBackspace:
@@ -50,7 +50,7 @@ gets:
     jz .block
     dec r3
     xor byte [r1 + r3], byte [r1 + r3]
-    invoke putc, r0
+    invoke printChar, r0
     jmp .block
 
 .checkMaxLen:
@@ -69,7 +69,7 @@ gets:
 .append:
     mov byte [r1 + r3], r0
     inc r3
-    invoke putc, r0
+    invoke printChar, r0
     jmp .block
 
 .return:
@@ -85,7 +85,8 @@ gets:
     pop bp
     retn 8
 
-getcInternal:
+; internal - wait for key press
+kbWaitChar:
     push r1
     push r2
 

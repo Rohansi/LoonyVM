@@ -1,14 +1,12 @@
 include 'loonyvm.inc'
 
-; setup interrupts
-ivt interruptTable
-sti
-
+; setup first task
 mov r0, tasks
 mov [r0 + TASK.State], 1
 mov [r0 + TASK.Regs.IP], task1
 mov [r0 + TASK.Regs.SP], 0x70000
 
+; and second task
 add r0, sizeof.TASK
 mov [r0 + TASK.State], 1
 mov [r0 + TASK.Regs.IP], task2
@@ -29,12 +27,16 @@ mov r0, 0
 mov r1, 1
 int 2
 
+; enable interrupts
+ivt interruptTable
+sti
+
 ; switch to right stack
 mov sp, 0x70000
 
 task1:
-    invoke puts, msgPrompt
-    invoke gets, nameBuff, 32
+    invoke printString, msgPrompt
+    invoke readString, nameBuff, 32
     invoke_va printf, msgResponseFmt, nameBuff
     jmp task1
 
