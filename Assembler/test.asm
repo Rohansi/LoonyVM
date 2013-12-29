@@ -61,11 +61,12 @@ task2:
     mov r5, r2
     div r5, termSizeX ; y = i / width
     pop r2
-    xor r4, r5
-    xor r4, r3
 
-    and r4, 01111111b
-    or  r4, 00001000b
+    add r4, r3
+    add r5, r3
+    xor r4, r5
+    and r4, 01110000b
+    or  r4, 00001111b
 
     mov byte [r2 + termAddr], byte r4
     dec r1
