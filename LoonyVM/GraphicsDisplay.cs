@@ -3,7 +3,7 @@ using SFML.Window;
 
 namespace LoonyVM
 {
-    public class GraphicsDisplay : Transformable
+    public class GraphicsDisplay : Transformable, Drawable
     {
         public readonly uint Width;
         public readonly uint Height;
@@ -33,12 +33,15 @@ namespace LoonyVM
             _renderer.SetParameter("palette", _paletteTexture);
         }
 
-        public void Draw(RenderTarget rt)
+        public void Draw(RenderTarget target, RenderStates states)
         {
             _paletteTexture.Update(_palette);
             _dataTexture.Update(_data);
 
-            rt.Draw(_display, new RenderStates(BlendMode.Alpha, Transform, null, _renderer));
+            states.Transform *= Transform;
+            states.Shader = _renderer;
+
+            target.Draw(_display, states);
         }
 
         public void Set(int x, int y, byte col)

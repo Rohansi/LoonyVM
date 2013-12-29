@@ -97,7 +97,7 @@ namespace LoonyVM.Devices
                             }
                         }
 
-                        _textDisplay.Draw(target);
+                        target.Draw(_textDisplay);
 
                         if (_cursorTimer.Elapsed.TotalSeconds > (1.0 / 2))
                         {
@@ -123,7 +123,7 @@ namespace LoonyVM.Devices
                             }
                         }
 
-                        _graphicsDisplay.Draw(target);
+                        target.Draw(_graphicsDisplay);
                         break;
                     }
             }
