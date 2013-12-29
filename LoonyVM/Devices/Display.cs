@@ -1,4 +1,5 @@
-﻿using SFML.Graphics;
+﻿using System.Diagnostics;
+using SFML.Graphics;
 using SFML.Window;
 using Texter;
 
@@ -21,6 +22,11 @@ namespace LoonyVM.Devices
         private TextDisplay _textDisplay;
         private GraphicsDisplay _graphicsDisplay;
 
+        private bool _cursorEnabled;
+        private bool _cursorVisible;
+        private Stopwatch _cursorTimer;
+        private RectangleShape _cursor;
+
         public Display(VirtualMachine machine, RenderWindow window)
         {
             _machine = machine;
@@ -30,6 +36,15 @@ namespace LoonyVM.Devices
 
             _graphicsDisplay = new GraphicsDisplay(320, 200);
             _graphicsDisplay.Scale = new Vector2f(2, 2);
+
+            _cursorEnabled = false;
+            _cursorVisible = false;
+            _cursorTimer = Stopwatch.StartNew();
+
+            var cursorSize = new Vector2f(_textDisplay.CharacterWidth, _textDisplay.CharacterHeight * 0.15f);
+            _cursor = new RectangleShape(cursorSize);
+            _cursor.Origin = new Vector2f(0, -(_textDisplay.CharacterHeight * 0.85f));
+            _cursor.FillColor = _textDisplay.PaletteGet(15);
 
             ChangeVideoMode(VideoMode.Text);
         }
@@ -41,15 +56,22 @@ namespace LoonyVM.Devices
 
         public void HandleInterruptRequest(VirtualMachine machine)
         {
-            
+
         }
 
         public void HandleInterrupt(VirtualMachine machine)
         {
             switch (machine.Registers[0])
             {
-                case 0:
+                case 0: // change mode
                     ChangeVideoMode((VideoMode)machine.Registers[1]);
+                    break;
+                case 1: // enable cursor
+                    _cursorEnabled = machine.Registers[1] != 0;
+                    break;
+                case 2: // move cursor
+                    _cursor.Position = new Vector2f(machine.Registers[1] * _textDisplay.CharacterWidth,
+                                                    machine.Registers[2] * _textDisplay.CharacterHeight);
                     break;
             }
         }
@@ -61,37 +83,49 @@ namespace LoonyVM.Devices
             switch (_mode)
             {
                 case VideoMode.Text:
-                {
-                    for (var y = 0; y < _textDisplay.Height; y++)
                     {
-                        for (var x = 0; x < _textDisplay.Width; x++)
+                        for (var y = 0; y < _textDisplay.Height; y++)
                         {
-                            var glyph = (char)_machine.Memory[addr++];
-                            var col = _machine.Memory[addr++];
-                            var colF = col & 0x0F;
-                            var colB = col >> 4;
+                            for (var x = 0; x < _textDisplay.Width; x++)
+                            {
+                                var glyph = (char)_machine.Memory[addr++];
+                                var col = _machine.Memory[addr++];
+                                var colF = col & 0x0F;
+                                var colB = col >> 4;
 
-                            _textDisplay.Set(x, y, new Character(glyph, colF, colB), false);
+                                _textDisplay.Set(x, y, new Character(glyph, colF, colB), false);
+                            }
                         }
-                    }
 
-                    _textDisplay.Draw(target);
-                    break;
-                }
+                        _textDisplay.Draw(target);
+
+                        if (_cursorTimer.Elapsed.TotalSeconds > (1.0 / 2))
+                        {
+                            _cursorVisible = !_cursorVisible;
+                            _cursorTimer.Restart();
+                        }
+
+                        if (_cursorEnabled && _cursorVisible)
+                        {
+                            target.Draw(_cursor);
+                        }
+
+                        break;
+                    }
 
                 case VideoMode.Graphics:
-                {
-                    for (var y = 0; y < _graphicsDisplay.Height; y++)
                     {
-                        for (var x = 0; x < _graphicsDisplay.Width; x++)
+                        for (var y = 0; y < _graphicsDisplay.Height; y++)
                         {
-                            _graphicsDisplay.Set(x, y, _machine.Memory[addr++]);
+                            for (var x = 0; x < _graphicsDisplay.Width; x++)
+                            {
+                                _graphicsDisplay.Set(x, y, _machine.Memory[addr++]);
+                            }
                         }
-                    }
 
-                    _graphicsDisplay.Draw(target);
-                    break;
-                }
+                        _graphicsDisplay.Draw(target);
+                        break;
+                    }
             }
         }
 

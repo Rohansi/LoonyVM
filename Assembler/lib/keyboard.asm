@@ -8,6 +8,11 @@ gets:
     push r2
     push r3
 
+    ; enable cursor
+    mov r0, 1
+    mov r1, 1
+    int 6
+
     mov r1, [bp + 8]  ; str
     mov r2, [bp + 12] ; maxLen
     xor r3, r3        ; len
@@ -15,6 +20,18 @@ gets:
     dec r2 ; space for null
 
 .block:
+    ; move cursor
+    push r0
+    push r1
+    push r2
+    mov r0, 2
+    mov r1, [termX]
+    mov r2, [termY]
+    int 6
+    pop r2
+    pop r1
+    pop r0
+
     call getcInternal
 
 .checkEnter:
@@ -56,6 +73,11 @@ gets:
     jmp .block
 
 .return:
+    ; disable cursor
+    mov r0, 1
+    xor r1, r1
+    int 6
+
     pop r3
     pop r2
     pop r1

@@ -11,8 +11,8 @@ putc:
     push r3
 
     mov r0, byte [bp + 8]
-    mov r1, [_termX]
-    mov r2, [_termY]
+    mov r1, [termX]
+    mov r2, [termY]
 
 .backspaceCheck:
     cmp r0, 8 ; \b
@@ -66,8 +66,8 @@ putc:
     mov byte [r3 + 1], 0x0F ; white on black
     inc r1
 .end:
-    mov [_termX], r1
-    mov [_termY], r2
+    mov [termX], r1
+    mov [termY], r2
 
 .return:
     pop r3
@@ -157,8 +157,8 @@ clear:
     dec r1
     jnz @b
 
-    mov [_termX], 0
-    mov [_termY], 0
+    mov [termX], 0
+    mov [termY], 0
 
 .return:
     pop r1
@@ -166,8 +166,8 @@ clear:
     pop bp
     ret
     
-_termX: dd 0
-_termY: dd 0
+termX: dd 0
+termY: dd 0
 
 termAddr = 0x60000
 termSizeX = 80
