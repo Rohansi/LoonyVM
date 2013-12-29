@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace LoonyVM
 {
     public partial class VirtualMachine : IDevice
@@ -31,9 +33,16 @@ namespace LoonyVM
 
         private void Exception(ExceptionCode code)
         {
-            IP = _errorIp;
-            Interrupt(Id);
-            Registers[0] = (int)code;
+            try
+            {
+                IP = _errorIp;
+                Interrupt(Id);
+                Registers[0] = (int)code;
+            }
+            catch (Exception e)
+            {
+                throw new VirtualMachineException(_errorIp, "Exception thrown in exception handler", e);
+            }
         }
     }
 }

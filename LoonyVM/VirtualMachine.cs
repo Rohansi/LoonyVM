@@ -57,7 +57,7 @@ namespace LoonyVM
             _interruptsEnabled = false;
             _interrupted = false;
             _ivt = 0;
-            _devices = new IDevice[32];
+            _devices = new IDevice[16];
 
             Attach(this);
         }
