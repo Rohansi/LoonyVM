@@ -214,6 +214,40 @@ strcmp:
     pop bp
     retn 8
 
+; int strncmp(byte* str1, byte* str2, int len)
+strncmp:
+    push bp
+    mov bp, sp
+    push r1
+    push r2
+    push r3
+
+    mov r1, [bp + 8]  ; str1
+    mov r2, [bp + 12] ; str2
+    mov r3, [bp + 16] ; len
+
+@@:
+    cmp byte [r1], byte [r1]
+    jz .done
+    cmp byte [r1], byte [r2]
+    jne .done
+    dec r3
+    jz .done
+    inc r1
+    inc r2
+    jmp @b
+
+.done:
+    mov r0, byte [r1]
+    sub r0, byte [r2]
+
+.return:
+    pop r3
+    pop r2
+    pop r1
+    pop bp
+    retn 12
+
 ; reverses a string
 ; void strreverse(byte* str)
 strreverse:
