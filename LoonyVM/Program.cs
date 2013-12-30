@@ -40,6 +40,9 @@ namespace LoonyVM
             var kbd = new Devices.Keyboard(Window);
             Machine.Attach(kbd);
 
+            var hdd = new Devices.HardDrive("hd0.img");
+            Machine.Attach(hdd);
+
             var stepThread = new Thread(() =>
             {
                 while (Window.IsOpen())

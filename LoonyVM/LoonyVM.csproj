@@ -83,6 +83,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Devices\HardDrive.cs" />
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Devices\Timer.cs" />
     <Compile Include="GraphicsDisplay.cs" />
