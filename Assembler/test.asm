@@ -52,6 +52,7 @@ struct FATDIRECTORYENTRY
 ends
 
 DOS83_MAX_LEN           = 11
+DIRECTORYBUFF_SIZE      = 4 * 1024
 FAT_BAD                 = 0x0FFFFFF7
 FAT_EOF                 = 0x0FFFFFF8
 FAT_FREE                = 0x00000000
@@ -60,14 +61,27 @@ entryPoint:
     invoke FatInitialize
     invoke_va printf, msgFatInitialized
 
-    invoke_va printf, msgSearching, fileName
-    invoke FatFindEntry, fileName
+    invoke_va printf, msgSearching, folder
+    invoke FatFindEntry, folder
     cmp r0, r0
-    jnz .found
+    jnz .foundFolder
+
     invoke printString, msgFileNotFound
     jmp $
 
-.found:
+.foundFolder:
+    invoke_va printf, msgFoundFile
+    invoke FatReadDirectory, r0
+
+    invoke_va printf, msgSearching, fileName
+    invoke FatFindEntry, fileName
+    cmp r0, r0
+    jnz .foundFile
+
+    invoke printString, msgFileNotFound
+    jmp $
+
+.foundFile:
     invoke_va printf, msgFoundFile
     invoke FatLoad, r0, 0x50000
 
@@ -75,18 +89,20 @@ entryPoint:
     invoke printString, 0x50000
     jmp $
 
-fileName: db 'FRESH   TXT', 0
+folder:             db 'JUNK       ', 0
+fileName:           db 'FRESH   TXT', 0
 
 msgFatInitialized:  db 'FAT32 initialized', 10, 0
 msgSearching:       db 'Searching for "%s" ... ', 0
 msgFoundFile:       db 'Found!', 10, 0
 msgDumping:         db 'Dumping contents: ', 10, 10, 0
-msgFileNotFound:    db 'File not found!', 0
+msgFileNotFound:    db 'Not found!', 0
 
 FatInitialize:
     push bp
     mov bp, sp
     push r0
+    push r1
 
     ; read bpp
     invoke DiskReadSector, 0, bpb
@@ -101,6 +117,17 @@ FatInitialize:
     div r0, sizeof.FATDIRECTORYENTRY
     mov [entriesPerCluster], r0
 
+    mov r0, word [bpb.reservedSectors]
+    mov r1, byte [bpb.numberOfFATs]
+    mul r1, dword [bpb.sectorsPerFATLarge]
+    add r0, r1
+    sub r0, 2
+    mov [clusterOffset], r0
+
+    mov r0, DIRECTORYBUFF_SIZE
+    div r0, [bytesPerCluster]
+    mov [maxDirectoryClusters], r0
+
     mov r0, word [bpb.bytesPerSector]
     div r0, 4
     mov [fatPerSector], r0
@@ -108,9 +135,10 @@ FatInitialize:
     mov [cachedFatSector], -1
 
     ; load root dir
-    invoke FatReadDirectory, [bpb.clusterRoot]
+    invoke FatReadDirectoryImpl, [bpb.clusterRoot]
 
 .return:
+    pop r1
     pop r0
     pop bp
     ret
@@ -181,14 +209,55 @@ FatFindEntry:
     pop bp
     retn 4
 
-; void FatReadDirectory(int startCluster)
+; void FatReadDirectory(FATDIRECTORYENTRY* entry)
 FatReadDirectory:
     push bp
     mov bp, sp
+    push r1
+    push r2
 
-    invoke FatReadCluster, [bp + 8], directoryBuff
+    mov r1, [bp + 8]
+    mov r2, word [r1 + FATDIRECTORYENTRY.firstClusterHi]
+    shl r2, 16
+    or  r2, word [r1 + FATDIRECTORYENTRY.firstClusterLo]
+    invoke FatReadDirectoryImpl, r2
 
 .return:
+    pop r2
+    pop r1
+    pop bp
+    retn 4
+
+; void FatReadDirectory(int startCluster)
+FatReadDirectoryImpl:
+    push bp
+    mov bp, sp
+    push r1
+    push r2
+    push r3
+
+    mov r1, [maxDirectoryClusters]
+    mov r2, directoryBuff
+    mov r3, [bp + 8]
+
+.read:
+    cmp r1, r1
+    jz .return
+    dec r1
+
+    invoke FatReadCluster, r3, r2
+    add r2, [bytesPerCluster]
+
+    invoke FatReadFat, r3
+    mov r3, r0
+
+    cmp r3, FAT_EOF
+    jb .read
+
+.return:
+    pop r3
+    pop r2
+    pop r1
     pop bp
     retn 4
 
@@ -230,11 +299,7 @@ FatReadCluster:
 
     mov r0, [bp + 8]  ; cluster
     mul r0, byte [bpb.sectorsPerCluster]
-    add r0, word [bpb.reservedSectors]
-    mov r1, byte [bpb.numberOfFATs]
-    mul r1, dword [bpb.sectorsPerFATLarge]
-    add r0, r1
-    sub r0, 2
+    add r0, [clusterOffset]
 
     mov r1, [bp + 12] ; dest
     mov r2, byte [bpb.sectorsPerCluster]
@@ -280,10 +345,12 @@ DiskReadSector:
 bpb                     FATBPB
 bytesPerCluster:        rd 1
 entriesPerCluster:      rd 1
+clusterOffset:          rd 1
 fatPerSector:           rd 1
+maxDirectoryClusters:   rd 1
 cachedFatSector:        rd 1
 cachedFat:              rd 1024
-directoryBuff:          rd 4 * 512
+directoryBuff:          rd DIRECTORYBUFF_SIZE
 
 include 'lib/string.asm'
 include 'lib/term.asm'
