@@ -33,11 +33,13 @@ namespace LoonyVM
 
         public readonly byte[] Memory;
 
+        // internal registers
         private Flags _flags;
+        private int _ivt;
+        
         private Instruction _instruction;
         private bool _interruptsEnabled;
         private bool _interrupted;
-        private int _ivt;
         private IDevice[] _devices;
         private int _errorIp;
 
@@ -53,13 +55,15 @@ namespace LoonyVM
             SP = Memory.Length;
 
             _flags = Flags.None;
+            _ivt = 0;
+
             _instruction = new Instruction(this);
             _interruptsEnabled = false;
             _interrupted = false;
-            _ivt = 0;
             _devices = new IDevice[16];
 
             Attach(this);
+            Attach(new Devices.SysCall());
         }
 
         public void Attach(IDevice device)
@@ -283,6 +287,9 @@ namespace LoonyVM
                     case Opcode.Cli:
                         _interruptsEnabled = false;
                         break;
+                    case Opcode.Neg:
+                        _instruction.Left.Set(0 - _instruction.Left.Get());
+                        break;
                     default:
                         throw new VirtualMachineInvalidOpcode("Bad opcode id");
                 }
@@ -317,10 +324,9 @@ namespace LoonyVM
             if (_interrupted)
                 throw new VirtualMachineException(_errorIp, "Can't interrupt while interrupted");
 
-            var sp = SP;
-            Push((int)_flags);
-            Push(sp);
+            Push(SP);
             Push(IP);
+            Push((int)_flags);
 
             for (var i = 10; i >= 0; i--)
             {
@@ -339,10 +345,9 @@ namespace LoonyVM
                 Registers[i] = Pop();
             }
 
-            IP = Pop();
-            var sp = Pop();
             _flags = (Flags)Pop();
-            SP = sp;
+            IP = Pop();
+            SP = Pop();
 
             _interrupted = false;
         }

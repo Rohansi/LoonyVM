@@ -93,9 +93,9 @@ timerInterruptHandler:
     mov [r0 + TASK.Regs.R8],    [bp + REGISTERS.R8]
     mov [r0 + TASK.Regs.R9],    [bp + REGISTERS.R9]
     mov [r0 + TASK.Regs.BP],    [bp + REGISTERS.BP]
+    mov [r0 + TASK.Regs.Flags], [bp + REGISTERS.Flags]
     mov [r0 + TASK.Regs.IP],    [bp + REGISTERS.IP]
     mov [r0 + TASK.Regs.SP],    [bp + REGISTERS.SP]
-    mov [r0 + TASK.Regs.Flags], [bp + REGISTERS.Flags]
 
     ; find next task
     mov r1, [currTask]
@@ -121,9 +121,9 @@ timerInterruptHandler:
     mov [bp + REGISTERS.R8],    [r0 + TASK.Regs.R8]
     mov [bp + REGISTERS.R9],    [r0 + TASK.Regs.R9]
     mov [bp + REGISTERS.BP],    [r0 + TASK.Regs.BP]
+    mov [bp + REGISTERS.Flags], [r0 + TASK.Regs.Flags]
     mov [bp + REGISTERS.IP],    [r0 + TASK.Regs.IP]
     mov [bp + REGISTERS.SP],    [r0 + TASK.Regs.SP]
-    mov [bp + REGISTERS.Flags], [r0 + TASK.Regs.Flags]
     mov [currTask], r1
 
     iret
@@ -151,9 +151,9 @@ struct REGISTERS
     R8      dd ?
     R9      dd ?
     BP      dd ?
+    Flags   dd ?
     IP      dd ?
     SP      dd ?
-    Flags   dd ?
 ends
 
 struct TASK

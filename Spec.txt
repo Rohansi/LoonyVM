@@ -50,6 +50,7 @@ Instructions
 25  POPA                Pop all general purpose registers
 26  STI                 Enable interrupts
 27  CLI                 Disable interrupts
+28  NEG     DST         Negates DST
 
 All math instructions (including bitwise) change the zero flag based on the result (which will be stored in DST).
 
