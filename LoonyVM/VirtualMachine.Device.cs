@@ -31,7 +31,7 @@ namespace LoonyVM
             
         }
 
-        private void Exception(ExceptionCode code)
+        private void Exception(ExceptionCode code, Exception e)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace LoonyVM
                 Interrupt(Id);
                 Registers[0] = (int)code;
             }
-            catch (Exception e)
+            catch
             {
                 throw new VirtualMachineException(_errorIp, "Exception thrown in exception handler", e);
             }

@@ -2,22 +2,25 @@
 
 namespace LoonyVM
 {
+    [Flags]
+    public enum VmFlags
+    {
+        Zero = 1 << 0,
+        Equal = 1 << 1,
+        Above = 1 << 2,
+        Below = 1 << 3,
+
+        None = 0
+    }
+
     public partial class VirtualMachine
     {
-        [Flags]
-        private enum Flags
-        {
-            Zero = 1 << 0,
-            Equal = 1 << 1,
-            Above = 1 << 2,
-            Below = 1 << 3,
-
-            None = 0
-        }
-
         private static readonly Random Random = new Random();
 
         public readonly int[] Registers;
+        public VmFlags Flags;
+        public int IVT;
+        public int Origin;
 
         public int IP
         {
@@ -33,10 +36,6 @@ namespace LoonyVM
 
         public readonly byte[] Memory;
 
-        // internal registers
-        private Flags _flags;
-        private int _ivt;
-        
         private Instruction _instruction;
         private bool _interruptsEnabled;
         private bool _interrupted;
@@ -54,8 +53,9 @@ namespace LoonyVM
             IP = 0;
             SP = Memory.Length;
 
-            _flags = Flags.None;
-            _ivt = 0;
+            Flags = VmFlags.None;
+            IVT = 0;
+            Origin = 0;
 
             _instruction = new Instruction(this);
             _interruptsEnabled = false;
@@ -188,46 +188,46 @@ namespace LoonyVM
                         var cmpValL = _instruction.Left.Get();
                         var cmpValR = _instruction.Right.Get();
 
-                        _flags = Flags.None;
+                        Flags = VmFlags.None;
                         if (cmpValL == 0)
-                            _flags |= Flags.Zero;
+                            Flags |= VmFlags.Zero;
                         if (cmpValL == cmpValR)
-                            _flags |= Flags.Equal;
+                            Flags |= VmFlags.Equal;
                         if (cmpValL > cmpValR)
-                            _flags |= Flags.Above;
+                            Flags |= VmFlags.Above;
                         if (cmpValL < cmpValR)
-                            _flags |= Flags.Below;
+                            Flags |= VmFlags.Below;
                         break;
                     case Opcode.Jz:
-                        if ((_flags & Flags.Zero) != 0)
+                        if ((Flags & VmFlags.Zero) != 0)
                             IP = _instruction.Left.Get();
                         break;
                     case Opcode.Jnz:
-                        if ((_flags & Flags.Zero) == 0)
+                        if ((Flags & VmFlags.Zero) == 0)
                             IP = _instruction.Left.Get();
                         break;
                     case Opcode.Je:
-                        if ((_flags & Flags.Equal) != 0)
+                        if ((Flags & VmFlags.Equal) != 0)
                             IP = _instruction.Left.Get();
                         break;
                     case Opcode.Jne:
-                        if ((_flags & Flags.Equal) == 0)
+                        if ((Flags & VmFlags.Equal) == 0)
                             IP = _instruction.Left.Get();
                         break;
                     case Opcode.Ja:
-                        if ((_flags & Flags.Above) != 0)
+                        if ((Flags & VmFlags.Above) != 0)
                             IP = _instruction.Left.Get();
                         break;
                     case Opcode.Jae:
-                        if ((_flags & Flags.Above) != 0 || (_flags & Flags.Equal) != 0)
+                        if ((Flags & VmFlags.Above) != 0 || (Flags & VmFlags.Equal) != 0)
                             IP = _instruction.Left.Get();
                         break;
                     case Opcode.Jb:
-                        if ((_flags & Flags.Below) != 0)
+                        if ((Flags & VmFlags.Below) != 0)
                             IP = _instruction.Left.Get();
                         break;
                     case Opcode.Jbe:
-                        if ((_flags & Flags.Below) != 0 || (_flags & Flags.Equal) != 0)
+                        if ((Flags & VmFlags.Below) != 0 || (Flags & VmFlags.Equal) != 0)
                             IP = _instruction.Left.Get();
                         break;
                     case Opcode.Rand:
@@ -243,7 +243,7 @@ namespace LoonyVM
                         InterruptReturn();
                         break;
                     case Opcode.Ivt:
-                        _ivt = _instruction.Left.Get();
+                        IVT = _instruction.Left.Get();
                         break;
                     case Opcode.Abs:
                         _instruction.Left.Set(Math.Abs(_instruction.Left.Get()));
@@ -260,12 +260,12 @@ namespace LoonyVM
                     case Opcode.Cmpxchg:
                         if (Registers[0] == _instruction.Left.Get())
                         {
-                            _flags |= Flags.Equal;
+                            Flags |= VmFlags.Equal;
                             _instruction.Left.Set(_instruction.Right.Get());
                         }
                         else
                         {
-                            _flags &= ~Flags.Equal;
+                            Flags &= ~VmFlags.Equal;
                             Registers[0] = _instruction.Left.Get();
                         }
                         break;
@@ -290,21 +290,27 @@ namespace LoonyVM
                     case Opcode.Neg:
                         _instruction.Left.Set(0 - _instruction.Left.Get());
                         break;
+                    case Opcode.Sorg:
+                        var org = _instruction.Left.Get();
+                        IP -= org;
+                        SP -= org;
+                        Origin = org;
+                        break;
                     default:
                         throw new VirtualMachineInvalidOpcode("Bad opcode id");
                 }
             }
-            catch (VirtualMachineInvalidOpcode)
+            catch (VirtualMachineInvalidOpcode e)
             {
-                Exception(ExceptionCode.InvalidOpcode);
+                Exception(ExceptionCode.InvalidOpcode, e);
             }
-            catch (IndexOutOfRangeException)
+            catch (IndexOutOfRangeException e)
             {
-                Exception(ExceptionCode.MemoryBounds);
+                Exception(ExceptionCode.MemoryBounds, e);
             }
-            catch (DivideByZeroException)
+            catch (DivideByZeroException e)
             {
-                Exception(ExceptionCode.DivideByZero);
+                Exception(ExceptionCode.DivideByZero, e);
             }
             catch (VirtualMachineException)
             {
@@ -326,14 +332,16 @@ namespace LoonyVM
 
             Push(SP);
             Push(IP);
-            Push((int)_flags);
+            Push((int)Flags);
+            Push(Origin);
 
             for (var i = 10; i >= 0; i--)
             {
                 Push(Registers[i]);
             }
 
-            IP = Memory.ReadInt(_ivt + (index * sizeof(int)));
+            Origin = 0;
+            IP = this.ReadInt(IVT + (index * sizeof(int)));
 
             _interrupted = true;
         }
@@ -345,7 +353,8 @@ namespace LoonyVM
                 Registers[i] = Pop();
             }
 
-            _flags = (Flags)Pop();
+            Origin = Pop();
+            Flags = (VmFlags)Pop();
             IP = Pop();
             SP = Pop();
 
@@ -355,21 +364,21 @@ namespace LoonyVM
         private void Push(int value)
         {
             SP -= sizeof(int);
-            Memory.WriteInt(SP, value);
+            this.WriteInt(SP, value);
         }
 
         private int Pop()
         {
-            var value = Memory.ReadInt(SP);
+            var value = this.ReadInt(SP);
             SP += sizeof(int);
             return value;
         }
 
         private void SetZero(int value)
         {
-            _flags &= ~Flags.Zero;
+            Flags &= ~VmFlags.Zero;
             if (value == 0)
-                _flags |= Flags.Zero;
+                Flags |= VmFlags.Zero;
         }
     }
 }

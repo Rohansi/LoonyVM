@@ -82,20 +82,21 @@ timerInterruptHandler:
     mov r0, [currTask]
     mul r0, sizeof.TASK
     add r0, tasks
-    mov [r0 + TASK.Regs.R0],    [bp + REGISTERS.R0]
-    mov [r0 + TASK.Regs.R1],    [bp + REGISTERS.R1]
-    mov [r0 + TASK.Regs.R2],    [bp + REGISTERS.R2]
-    mov [r0 + TASK.Regs.R3],    [bp + REGISTERS.R3]
-    mov [r0 + TASK.Regs.R4],    [bp + REGISTERS.R4]
-    mov [r0 + TASK.Regs.R5],    [bp + REGISTERS.R5]
-    mov [r0 + TASK.Regs.R6],    [bp + REGISTERS.R6]
-    mov [r0 + TASK.Regs.R7],    [bp + REGISTERS.R7]
-    mov [r0 + TASK.Regs.R8],    [bp + REGISTERS.R8]
-    mov [r0 + TASK.Regs.R9],    [bp + REGISTERS.R9]
-    mov [r0 + TASK.Regs.BP],    [bp + REGISTERS.BP]
-    mov [r0 + TASK.Regs.Flags], [bp + REGISTERS.Flags]
-    mov [r0 + TASK.Regs.IP],    [bp + REGISTERS.IP]
-    mov [r0 + TASK.Regs.SP],    [bp + REGISTERS.SP]
+    mov [r0 + TASK.Regs.R0],     [bp + REGISTERS.R0]
+    mov [r0 + TASK.Regs.R1],     [bp + REGISTERS.R1]
+    mov [r0 + TASK.Regs.R2],     [bp + REGISTERS.R2]
+    mov [r0 + TASK.Regs.R3],     [bp + REGISTERS.R3]
+    mov [r0 + TASK.Regs.R4],     [bp + REGISTERS.R4]
+    mov [r0 + TASK.Regs.R5],     [bp + REGISTERS.R5]
+    mov [r0 + TASK.Regs.R6],     [bp + REGISTERS.R6]
+    mov [r0 + TASK.Regs.R7],     [bp + REGISTERS.R7]
+    mov [r0 + TASK.Regs.R8],     [bp + REGISTERS.R8]
+    mov [r0 + TASK.Regs.R9],     [bp + REGISTERS.R9]
+    mov [r0 + TASK.Regs.BP],     [bp + REGISTERS.BP]
+    mov [r0 + TASK.Regs.Origin], [bp + REGISTERS.Origin]
+    mov [r0 + TASK.Regs.Flags],  [bp + REGISTERS.Flags]
+    mov [r0 + TASK.Regs.IP],     [bp + REGISTERS.IP]
+    mov [r0 + TASK.Regs.SP],     [bp + REGISTERS.SP]
 
     ; find next task
     mov r1, [currTask]
@@ -110,20 +111,21 @@ timerInterruptHandler:
     je .search
 
     ; restore new task
-    mov [bp + REGISTERS.R0],    [r0 + TASK.Regs.R0]
-    mov [bp + REGISTERS.R1],    [r0 + TASK.Regs.R1]
-    mov [bp + REGISTERS.R2],    [r0 + TASK.Regs.R2]
-    mov [bp + REGISTERS.R3],    [r0 + TASK.Regs.R3]
-    mov [bp + REGISTERS.R4],    [r0 + TASK.Regs.R4]
-    mov [bp + REGISTERS.R5],    [r0 + TASK.Regs.R5]
-    mov [bp + REGISTERS.R6],    [r0 + TASK.Regs.R6]
-    mov [bp + REGISTERS.R7],    [r0 + TASK.Regs.R7]
-    mov [bp + REGISTERS.R8],    [r0 + TASK.Regs.R8]
-    mov [bp + REGISTERS.R9],    [r0 + TASK.Regs.R9]
-    mov [bp + REGISTERS.BP],    [r0 + TASK.Regs.BP]
-    mov [bp + REGISTERS.Flags], [r0 + TASK.Regs.Flags]
-    mov [bp + REGISTERS.IP],    [r0 + TASK.Regs.IP]
-    mov [bp + REGISTERS.SP],    [r0 + TASK.Regs.SP]
+    mov [bp + REGISTERS.R0],     [r0 + TASK.Regs.R0]
+    mov [bp + REGISTERS.R1],     [r0 + TASK.Regs.R1]
+    mov [bp + REGISTERS.R2],     [r0 + TASK.Regs.R2]
+    mov [bp + REGISTERS.R3],     [r0 + TASK.Regs.R3]
+    mov [bp + REGISTERS.R4],     [r0 + TASK.Regs.R4]
+    mov [bp + REGISTERS.R5],     [r0 + TASK.Regs.R5]
+    mov [bp + REGISTERS.R6],     [r0 + TASK.Regs.R6]
+    mov [bp + REGISTERS.R7],     [r0 + TASK.Regs.R7]
+    mov [bp + REGISTERS.R8],     [r0 + TASK.Regs.R8]
+    mov [bp + REGISTERS.R9],     [r0 + TASK.Regs.R9]
+    mov [bp + REGISTERS.BP],     [r0 + TASK.Regs.BP]
+    mov [bp + REGISTERS.Origin], [r0 + TASK.Regs.Origin]
+    mov [bp + REGISTERS.Flags],  [r0 + TASK.Regs.Flags]
+    mov [bp + REGISTERS.IP],     [r0 + TASK.Regs.IP]
+    mov [bp + REGISTERS.SP],     [r0 + TASK.Regs.SP]
     mov [currTask], r1
 
     iret
@@ -151,6 +153,7 @@ struct REGISTERS
     R8      dd ?
     R9      dd ?
     BP      dd ?
+    Origin  dd ?
     Flags   dd ?
     IP      dd ?
     SP      dd ?
