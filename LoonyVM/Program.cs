@@ -27,7 +27,7 @@ namespace LoonyVM
 
             Machine = new VirtualMachine(512 * 1024);
 
-            var prog = File.ReadAllBytes("test.bin");
+            var prog = File.ReadAllBytes("bios.bin");
             for (var i = 0; i < prog.Length; i++)
                 Machine.Memory[i] = prog[i];
 
@@ -40,7 +40,7 @@ namespace LoonyVM
             var kbd = new Devices.Keyboard(Window);
             Machine.Attach(kbd);
 
-            var hdd = new Devices.HardDrive("hd0.img");
+            var hdd = new Devices.HardDrive("disk.img");
             Machine.Attach(hdd);
 
             var stepThread = new Thread(() =>
