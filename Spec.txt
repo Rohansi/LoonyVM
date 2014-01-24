@@ -5,9 +5,9 @@ Has at least 512kB of memory.
 Registers
 --------------------
 R0-R9   10 general purpose registers
+BP      Base pointer
 IP      Instruction pointer
 SP      Stack pointer
-BP      Base pointer
 
 Instructions
 --------------------
