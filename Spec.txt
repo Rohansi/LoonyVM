@@ -7,7 +7,7 @@ Registers
 R0-R9   10 general purpose registers
 IP      Instruction pointer
 SP      Stack pointer
-BP	Base pointer
+BP      Base pointer
 
 Instructions
 --------------------
