@@ -111,7 +111,7 @@ namespace FasmDebug
             }
 
             var input = args[0];
-            var output = Path.GetFileNameWithoutExtension(input) + ".dbg";
+            var output = Path.ChangeExtension(input, ".dbg");
 
             try
             {
