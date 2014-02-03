@@ -63,6 +63,7 @@ namespace LoonyVM
             _devices = new IDevice[16];
 
             Attach(this);
+            Attach(new Devices.Timer());
             Attach(new Devices.SysCall());
         }
 

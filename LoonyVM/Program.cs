@@ -34,9 +34,6 @@ namespace LoonyVM
             var display = new Devices.Display(Machine, Window);
             Machine.Attach(display);
 
-            var timer = new Devices.Timer();
-            Machine.Attach(timer);
-
             var kbd = new Devices.Keyboard(Window);
             Machine.Attach(kbd);
 
