@@ -81,19 +81,19 @@ namespace FasmDebug
 
     class Symbol
     {
-        public string Name;
-
         public int NameOffset;
         public int Address;
+
+        public string Name;
     }
 
     class Line
     {
-        public string FileName;
-
         public int FileNameOffset;
         public int LineNumber;
         public int Address;
+
+        public string FileName;
     }
 
     public class Program
@@ -139,16 +139,14 @@ namespace FasmDebug
             using (var file = new FileStream(fileName, FileMode.Create))
             using (var writer = new BinaryWriter(file))
             {
-                const int headerSize = 24;
+                const int headerSize = 20;
                 var symbolsSize = _symbols.Count * 8;
-                var linesSize = _lines.Count * 12;
 
-                writer.Write(0x30474244);                           // header - DBG0
-                writer.Write(headerSize);                           // symbol offset
-                writer.Write(_symbols.Count);                       // symbol count
-                writer.Write(headerSize + symbolsSize);             // line offset
-                writer.Write(_lines.Count);                         // line count
-                writer.Write(headerSize + symbolsSize + linesSize); // string table offset
+                writer.Write(0x30474244);               // header - DBG0
+                writer.Write(headerSize);               // symbol offset
+                writer.Write(_symbols.Count);           // symbol count
+                writer.Write(headerSize + symbolsSize); // line offset
+                writer.Write(_lines.Count);             // line count
 
                 file.Seek(_symbols.Count * 8, SeekOrigin.Current);
                 file.Seek(_lines.Count * 12, SeekOrigin.Current);
