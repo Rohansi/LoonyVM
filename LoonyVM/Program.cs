@@ -59,7 +59,7 @@ namespace LoonyVM
                 Window.Display();
             }
 
-            timer.Dispose();
+            Machine.Dispose();
         }
     }
 }

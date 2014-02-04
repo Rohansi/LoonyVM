@@ -13,7 +13,7 @@ namespace LoonyVM
         None = 0
     }
 
-    public partial class VirtualMachine
+    public partial class VirtualMachine : IDisposable
     {
         private static readonly Random Random = new Random();
 
@@ -42,6 +42,8 @@ namespace LoonyVM
         private IDevice[] _devices;
         private int _errorIp;
 
+        private Devices.Timer _timer;
+
         public VirtualMachine(int memorySize)
         {
             if (memorySize < 512 * 1024)
@@ -63,7 +65,10 @@ namespace LoonyVM
             _devices = new IDevice[16];
 
             Attach(this);
-            Attach(new Devices.Timer());
+
+            _timer = new Devices.Timer();
+            Attach(_timer);
+
             Attach(new Devices.SysCall());
         }
 
@@ -380,6 +385,11 @@ namespace LoonyVM
             Flags &= ~VmFlags.Zero;
             if (value == 0)
                 Flags |= VmFlags.Zero;
+        }
+
+        public void Dispose()
+        {
+            _timer.Dispose();
         }
     }
 }
