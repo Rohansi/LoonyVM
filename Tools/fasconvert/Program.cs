@@ -254,8 +254,11 @@ namespace FasmDebug
                         name = reader.ReadString();
                     }
 
-                    if (name[0] == '.')
+                    if (name.Length >= 2 && name[0] == '.')
                     {
+                        if (name[1] == '.') // macro label?
+                            continue;
+                        
                         name = parent + name;
                     }
 

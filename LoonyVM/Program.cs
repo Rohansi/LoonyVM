@@ -59,6 +59,7 @@ namespace LoonyVM
                 Window.Display();
             }
 
+            stepThread.Join();
             Machine.Dispose();
         }
     }
