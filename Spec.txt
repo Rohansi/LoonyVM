@@ -6,8 +6,8 @@ Registers
 --------------------
 R0-R9   10 general purpose registers
 BP      Base pointer
-IP      Instruction pointer
 SP      Stack pointer
+IP      Instruction pointer
 
 Instructions
 --------------------
@@ -59,7 +59,7 @@ All math instructions (including bitwise) change the zero flag based on the resu
 Operands
 --------------------
 Operands (DST/SRC) can be one the following values:
- - Register (R0 through R9, BP, IP or SP)
+ - Register (R0 through R9, BP, SP or IP)
  - Immediate
  - or any of the above surrounded by square brackets making them pointers.
 
@@ -101,8 +101,8 @@ Instructions are assembled into the following format:
 Operands Types:
  00-09  Register
  0A     BP
- 0B     IP
- 0C     SP
+ 0B     SP
+ 0C     IP
  0D     Immediate byte
  0E     Immediate word
  0F     Immediate dword

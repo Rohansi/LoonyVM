@@ -31,8 +31,8 @@ ip equ rip
 @r8 = 0x08
 @r9 = 0x09
 @bp = 0x0A
-@ip = 0x0B
-@sp = 0x0C
+@sp = 0x0B
+@ip = 0x0C
 
 @immb = 0x0D
 @immw = 0x0E
@@ -117,7 +117,7 @@ macro _pParseOperand value {
     match base + expr,v \{
         define v expr
         if base eqtype eax
-    irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp ip sp \\{
+    irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp sp ip \\{
             if base eq reg
                 @isOffset = 1
                 @isNegOffset = 0
@@ -134,7 +134,7 @@ macro _pParseOperand value {
         define v
         
         if 0 = 1
-    irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp ip sp \\{
+    irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp sp ip \\{
         else if expr eq reg
             @operand = @\\#reg
     \\}

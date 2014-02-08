@@ -24,14 +24,14 @@ namespace LoonyVM
 
         public int IP
         {
-            get { return Registers[0xB]; }
-            set { Registers[0xB] = value; }
+            get { return Registers[0xC]; }
+            set { Registers[0xC] = value; }
         }
 
         public int SP
         {
-            get { return Registers[0xC]; }
-            set { Registers[0xC] = value; }
+            get { return Registers[0xB]; }
+            set { Registers[0xB] = value; }
         }
 
         public readonly byte[] Memory;
