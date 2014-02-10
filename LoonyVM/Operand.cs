@@ -91,6 +91,12 @@ namespace LoonyVM
             }
         }
 
+        private static readonly string[] RegisterNames =
+        {
+            "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9",
+            "bp", "sp", "ip"
+        };
+
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -114,25 +120,13 @@ namespace LoonyVM
 
             if (_offset)
             {
-                if (_offsetRegister <= 0x9)
-                    sb.AppendFormat("r{0:x}", _offsetRegister);
-                if (_offsetRegister == 0xA)
-                    sb.Append("bp");
-                if (_offsetRegister == 0xB)
-                    sb.Append("ip");
-                if (_offsetRegister == 0xC)
-                    sb.Append("sp");
+                if (_offsetRegister <= 0xC)
+                    sb.Append(RegisterNames[_offsetRegister]);
                 sb.Append(" + ");
             }
 
-            if (_type <= 0x9)
-                sb.AppendFormat("r{0:x}", _type);
-            if (_type == 0xA)
-                sb.Append("bp");
-            if (_type == 0xB)
-                sb.Append("ip");
-            if (_type == 0xC)
-                sb.Append("sp");
+            if (_type <= 0xC)
+                sb.Append(RegisterNames[_type]);
             if (_type >= 0xD && _type <= 0xF)
                 sb.Append(_payload);
 
