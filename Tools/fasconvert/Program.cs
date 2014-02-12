@@ -136,6 +136,9 @@ namespace FasmDebug
 
         private static void WriteDebug(string fileName)
         {
+            _symbols = _symbols.DistinctBy(s => s.Address).ToList();
+            _lines = _lines.DistinctBy(l => l.Address).ToList();
+
             using (var file = new FileStream(fileName, FileMode.Create))
             using (var writer = new BinaryWriter(file))
             {
@@ -256,8 +259,8 @@ namespace FasmDebug
 
                     if (name.Length >= 2 && name[0] == '.')
                     {
-                        if (name[1] == '.') // macro label?
-                            continue;
+                        /*if (name[1] == '.') // macro label?
+                            continue;*/
                         
                         name = parent + name;
                     }
@@ -469,6 +472,23 @@ namespace FasmDebug
             };
 
             return result;
+        }
+    }
+
+    static class Util
+    {
+        // http://stackoverflow.com/a/1300116/1056845
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>
+            (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        {
+            HashSet<TKey> knownKeys = new HashSet<TKey>();
+            foreach (TSource element in source)
+            {
+                if (knownKeys.Add(keySelector(element)))
+                {
+                    yield return element;
+                }
+            }
         }
     }
 }
