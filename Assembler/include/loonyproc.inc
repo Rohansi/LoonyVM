@@ -13,7 +13,7 @@ common
 macro invoke_va proc,[arg]
 {
 common
-    @cnt = 1
+    @cnt = 0
     if ~ arg eq
 reverse
         push arg
