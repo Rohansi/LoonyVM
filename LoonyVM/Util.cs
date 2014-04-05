@@ -3,38 +3,6 @@ namespace LoonyVM
 {
     internal static class Util
     {
-        #region Memory I/O - VM
-        public static sbyte ReadSByte(this VirtualMachine machine, int offset)
-        {
-            return machine.Memory.ReadSByte(machine.Origin + offset);
-        }
-
-        public static short ReadShort(this VirtualMachine machine, int offset)
-        {
-            return machine.Memory.ReadShort(machine.Origin + offset);
-        }
-
-        public static int ReadInt(this VirtualMachine machine, int offset)
-        {
-            return machine.Memory.ReadInt(machine.Origin + offset);
-        }
-
-        public static void WriteSByte(this VirtualMachine machine, int offset, sbyte value)
-        {
-            machine.Memory.WriteSByte(machine.Origin + offset, value);
-        }
-
-        public static void WriteShort(this VirtualMachine machine, int offset, short value)
-        {
-            machine.Memory.WriteShort(machine.Origin + offset, value);
-        }
-
-        public static void WriteInt(this VirtualMachine machine, int offset, int value)
-        {
-            machine.Memory.WriteInt(machine.Origin + offset, value);
-        }
-        #endregion
-
         #region Memory I/O - General
         public static sbyte ReadSByte(this byte[] buffer, int offset)
         {

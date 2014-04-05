@@ -79,7 +79,6 @@ ip equ rip
 @sti     = 0x26
 @cli     = 0x27
 @neg     = 0x28
-@sorg    = 0x29
 
 macro _pParseOperand value {
     define v value
@@ -88,7 +87,6 @@ macro _pParseOperand value {
     @operandType = 2
     @isPtr = 0
     @isOffset = 0
-    @isNegOffset = 0
     @offsetReg = 0
     @hasPayload = 0
     @payloadType = 2
@@ -120,7 +118,6 @@ macro _pParseOperand value {
     irps reg, r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 bp sp ip \\{
             if base eq reg
                 @isOffset = 1
-                @isNegOffset = 0
                 @offsetReg = @\\#reg
             end if
     \\}
@@ -288,7 +285,7 @@ irps instr, mov add sub mul div rem and or xor shl shr cmp xchg cmpxchg {
     \} 
 }
 
-irps instr, inc dec not push pop jmp call jz jnz je jne ja jae jb jbe rand int ivt abs retn neg sorg { 
+irps instr, inc dec not push pop jmp call jz jnz je jne ja jae jb jbe rand int ivt abs retn neg { 
     macro instr a \{
         _pInstruction1 @\#instr,a
     \} 

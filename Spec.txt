@@ -1,4 +1,4 @@
-Virtual Machine
+Loony Virtual Machine
 --------------------
 Has at least 512kB of memory.
 
@@ -52,7 +52,6 @@ Instructions
 26  STI                 Enable interrupts
 27  CLI                 Disable interrupts
 28  NEG     DST         Negates DST
-29  SORG    DST         Set internal origin register and apply it to IP and SP
 
 All math instructions (including bitwise) change the zero flag based on the result (which will be stored in DST).
 

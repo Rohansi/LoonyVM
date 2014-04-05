@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace LoonyVM
+﻿namespace LoonyVM
 {
     public partial class VirtualMachine : IDevice
     {
@@ -10,8 +7,6 @@ namespace LoonyVM
             InvalidOpcode        = 0x00,
             DivideByZero         = 0x01,
             MemoryBounds         = 0x02,
-
-            Breakpoint           = 0x10,
         }
 
         public byte Id { get { return 0x00; } }
@@ -31,7 +26,7 @@ namespace LoonyVM
             
         }
 
-        private void Exception(ExceptionCode code, Exception e)
+        private void Exception(ExceptionCode code)
         {
             try
             {
@@ -41,7 +36,7 @@ namespace LoonyVM
             }
             catch
             {
-                throw new VirtualMachineException(_errorIp, "Exception thrown in exception handler", e);
+                throw new VirtualMachineException(_errorIp, "Exception thrown in exception handler");
             }
         }
     }

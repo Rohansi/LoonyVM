@@ -20,7 +20,6 @@ namespace LoonyVM
         public readonly int[] Registers;
         public VmFlags Flags;
         public int IVT;
-        public int Origin;
 
         public int IP
         {
@@ -57,7 +56,6 @@ namespace LoonyVM
 
             Flags = VmFlags.None;
             IVT = 0;
-            Origin = 0;
 
             _instruction = new Instruction(this);
             _interruptsEnabled = false;
@@ -296,27 +294,21 @@ namespace LoonyVM
                     case Opcode.Neg:
                         _instruction.Left.Set(0 - _instruction.Left.Get());
                         break;
-                    case Opcode.Sorg:
-                        var org = _instruction.Left.Get();
-                        IP -= org;
-                        SP -= org;
-                        Origin = org;
-                        break;
                     default:
                         throw new VirtualMachineInvalidOpcode("Bad opcode id");
                 }
             }
-            catch (VirtualMachineInvalidOpcode e)
+            catch (VirtualMachineInvalidOpcode)
             {
-                Exception(ExceptionCode.InvalidOpcode, e);
+                Exception(ExceptionCode.InvalidOpcode);
             }
-            catch (IndexOutOfRangeException e)
+            catch (IndexOutOfRangeException)
             {
-                Exception(ExceptionCode.MemoryBounds, e);
+                Exception(ExceptionCode.MemoryBounds);
             }
-            catch (DivideByZeroException e)
+            catch (DivideByZeroException)
             {
-                Exception(ExceptionCode.DivideByZero, e);
+                Exception(ExceptionCode.DivideByZero);
             }
             catch (VirtualMachineException)
             {
@@ -324,7 +316,7 @@ namespace LoonyVM
             }
             catch (Exception e)
             {
-                throw new VirtualMachineException(_errorIp, "Error: " + e, e);
+                throw new VirtualMachineException(_errorIp, "Error: " + e);
             }
         }
 
@@ -339,15 +331,13 @@ namespace LoonyVM
             Push(SP);
             Push(IP);
             Push((int)Flags);
-            Push(Origin);
 
             for (var i = 10; i >= 0; i--)
             {
                 Push(Registers[i]);
             }
 
-            Origin = 0;
-            IP = this.ReadInt(IVT + (index * sizeof(int)));
+            IP = Memory.ReadInt(IVT + (index * sizeof(int)));
 
             _interrupted = true;
         }
@@ -359,7 +349,6 @@ namespace LoonyVM
                 Registers[i] = Pop();
             }
 
-            Origin = Pop();
             Flags = (VmFlags)Pop();
             IP = Pop();
             SP = Pop();
@@ -370,12 +359,12 @@ namespace LoonyVM
         private void Push(int value)
         {
             SP -= sizeof(int);
-            this.WriteInt(SP, value);
+            Memory.WriteInt(SP, value);
         }
 
         private int Pop()
         {
-            var value = this.ReadInt(SP);
+            var value = Memory.ReadInt(SP);
             SP += sizeof(int);
             return value;
         }

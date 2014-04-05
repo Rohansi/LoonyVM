@@ -61,15 +61,15 @@ namespace LoonyVM
             switch (operandType)
             {
                 case 0xD:
-                    payload = _machine.ReadSByte(_machine.IP);
+                    payload = _machine.Memory.ReadSByte(_machine.IP);
                     _machine.IP += sizeof(sbyte);
                     break;
                 case 0xE:
-                    payload = _machine.ReadShort(_machine.IP);
+                    payload = _machine.Memory.ReadShort(_machine.IP);
                     _machine.IP += sizeof(short);
                     break;
                 case 0xF:
-                    payload = _machine.ReadInt(_machine.IP);
+                    payload = _machine.Memory.ReadInt(_machine.IP);
                     _machine.IP += sizeof(int);
                     break;
             }
