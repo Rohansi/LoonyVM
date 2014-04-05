@@ -279,7 +279,8 @@ disasmInstrLookup:
     dd disasmPopa      ; 25
     dd disasmSti       ; 26
     dd disasmCli       ; 27
-disasmInstrCount     = 0x27
+    dd disasmNeg
+disasmInstrCount     = 0x28
 
 disasmRegLookup:
     dd disasmR0        ; 00
@@ -293,8 +294,8 @@ disasmRegLookup:
     dd disasmR8        ; 08
     dd disasmR9        ; 09
     dd disasmBP        ; 0A
-    dd disasmIP        ; 0B
-    dd disasmSP        ; 0C
+    dd disasmSP        ; 0B
+    dd disasmIP        ; 0C
 disasmRegCount       = 0x0C
 
 disasmTypeLookup:
@@ -344,7 +345,8 @@ disasmOperandLookup:
     db 0               ; popa
     db 0               ; sti
     db 0               ; cli
-
+    db 1               ; neg
+ 
 disasmMov:        db 'mov', 0
 disasmAdd:        db 'add', 0
 disasmSub:        db 'sub', 0
@@ -385,6 +387,7 @@ disasmPusha:      db 'pusha', 0
 disasmPopa:       db 'popa', 0
 disasmSti:        db 'sti', 0
 disasmCli:        db 'cli', 0
+disasmNeg:        db 'neg', 0
 
 disasmR0:         db 'r0', 0
 disasmR1:         db 'r1', 0
@@ -397,8 +400,8 @@ disasmR7:         db 'r7', 0
 disasmR8:         db 'r8', 0
 disasmR9:         db 'r9', 0
 disasmBP:         db 'bp', 0
-disasmIP:         db 'ip', 0
 disasmSP:         db 'sp', 0
+disasmIP:         db 'ip', 0
 
 disasmByte:       db 'byte ', 0
 disasmWord:       db 'word ', 0

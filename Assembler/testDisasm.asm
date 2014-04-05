@@ -10,15 +10,15 @@ sti
     rand byte r0
     rand byte r1
     invoke itoa, byte r0, itoaBuffer
-    invoke puts, itoaBuffer
-    invoke puts, strDiv
+    invoke printString, itoaBuffer
+    invoke printString, strDiv
     invoke itoa, byte r1, itoaBuffer
-    invoke puts, itoaBuffer
-    invoke puts, strEq
+    invoke printString, itoaBuffer
+    invoke printString, strEq
     div byte r0, byte r1
     invoke itoa, byte r0, itoaBuffer
-    invoke puts, itoaBuffer
-    invoke putc, 10
+    invoke printString, itoaBuffer
+    invoke printChar, 10
     jmp @b
 
 strDiv: db ' / ', 0
@@ -28,42 +28,42 @@ itoaBuffer: db '-1234567890', 0
 exceptionHandler:
     mov bp, sp
 
-    invoke putc, 10
+    invoke printChar, 10
 .invalidOpcode:
     cmp r0, 0
     jne .divByZero
-    invoke puts, msgUnknownOpcode
+    invoke printString, msgUnknownOpcode
     jmp @f
 .divByZero:
     cmp r0, 1
     jne .memoryBounds
-    invoke puts, msgDivByZero
+    invoke printString, msgDivByZero
     jmp @f
 .memoryBounds:
     cmp r0, 2
     jne .default
-    invoke puts, msgMemoryBounds
+    invoke printString, msgMemoryBounds
     jmp @f
 .default:
-    invoke puts, msgUnknownException
+    invoke printString, msgUnknownException
 @@:
-    invoke putc, ':'
-    invoke putc, 10
+    invoke printChar, ':'
+    invoke printChar, 10
 
-    mov r1, [bp + (0xB * 4)]
+    mov r1, [bp + (0xC * 4)]
     mov r2, 5
 @@:
     invoke disassemble, r1, disasmBuffer
     cmp r0, r0
     jz .error
-    invoke puts, disasmBuffer
-    invoke putc, 10
+    invoke printString, disasmBuffer
+    invoke printChar, 10
     add r1, r0
     dec r2
     jnz @b
     jmp .return
 .error:
-    invoke puts, msgDisasmError
+    invoke printString, msgDisasmError
 
 .return:
     jmp $ ; hang, returning will not help

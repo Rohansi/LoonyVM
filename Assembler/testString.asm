@@ -3,17 +3,17 @@ include 'loonyvm.inc'
 @@:
     rand byte r1
     rand byte r2
-    invoke puts, str1
+    invoke printString, str1
     invoke itoa, byte r1, itoaBuffer1
-    invoke puts, itoaBuffer1
-    invoke puts, str2
+    invoke printString, itoaBuffer1
+    invoke printString, str2
     invoke itoa, byte r2, itoaBuffer2
-    invoke puts, itoaBuffer2
-    invoke puts, str3
+    invoke printString, itoaBuffer2
+    invoke printString, str3
     invoke strcmp, itoaBuffer1, itoaBuffer2
     invoke itoa, r0, itoaBuffer1
-    invoke puts, itoaBuffer1
-    invoke putc, 10
+    invoke printString, itoaBuffer1
+    invoke printChar, 10
     jmp @b
 
 str1: db 'strcmp("', 0

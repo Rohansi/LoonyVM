@@ -10,8 +10,8 @@ mov r1, 1
 int 2
 
 main:
-    invoke puts, msgPrompt
-    invoke gets, nameBuff, 32
+    invoke printString, msgPrompt
+    invoke readString, nameBuff, 32
     invoke_va printf, msgResponseFmt, nameBuff
     jmp main
 

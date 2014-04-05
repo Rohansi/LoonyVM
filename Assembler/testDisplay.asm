@@ -1,30 +1,31 @@
 include 'loonyvm.inc'
 
-; laziest display demo
-; write all colors in the palette endlessly
+VIDEO_ADDR      = 0x60000
+VIDEO_WIDTH     = 320
+VIDEO_HEIGHT    = 200
 
-; switch to graphics display
-mov r0, 0
-mov r1, 1
+; switch to graphics mode
+inc r1
 int 6
 
-xor r3, r3
-
-draw:
-	.cnt = screenSizeX * screenSizeY
-	mov r1, .cnt
-	mov r2, screenAddr
-
+main:
+    xor r3, r3
+.draw:
+    xor r1, r1
+    add r3, 2
 @@:
-	cmp r1, r1
-	jz draw
-	mov byte [r2], byte r3
-	dec r1
-	inc r2
-	inc r3
-	rem r3, 255
-	jmp @b
+    cmp r1, VIDEO_WIDTH * VIDEO_HEIGHT
+    je .draw
 
-screenAddr = 0x60000
-screenSizeX = 320
-screenSizeY = 200
+    mov r4, r1
+    rem r4, VIDEO_WIDTH ; x = i % width
+    mov r5, r1
+    div r5, VIDEO_WIDTH ; y = i / width
+
+    add r4, r3
+    add r5, r3
+    xor r4, r5
+
+    mov byte [r1 + VIDEO_ADDR], r4
+    inc r1
+    jmp @b

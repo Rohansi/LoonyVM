@@ -4,13 +4,13 @@ include 'loonyvm.inc'
     rand r0
     invoke itoa, r0, itoaBuffer1
     invoke strlen, itoaBuffer1
-    invoke puts, str1
-    invoke puts, itoaBuffer1
-    invoke puts, str2
+    invoke printString, str1
+    invoke printString, itoaBuffer1
+    invoke printString, str2
     invoke strlen, itoaBuffer1
     invoke itoa, r0, itoaBuffer2
-    invoke puts, itoaBuffer2
-    invoke putc, 32 ; space
+    invoke printString, itoaBuffer2
+    invoke printChar, 32 ; space
     jmp @b
 
 str1: db 'strlen("', 0

@@ -16,14 +16,14 @@ int 1
 
 @@:
     cli
-    invoke puts, msgCode
+    invoke printString, msgCode
     sti
     jmp @b
 
 msgCode: db 'normal code ', 0
 
 timerHandler:
-    invoke puts, msgTimer
+    invoke printString, msgTimer
     iret
 
 msgTimer: db 'TIMER INTERRUPT ', 0

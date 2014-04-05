@@ -4,7 +4,7 @@ mov r0, 10
 
 .while r0 >= 0
 	.if r0 = 5
-		invoke puts, msgFive
+		invoke printString, msgFive
 	.else
 		invoke_va printf, msgCountFmt, r0
 	.endif
