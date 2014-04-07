@@ -32,7 +32,7 @@
             {
                 IP = _errorIp;
                 Interrupt(Id);
-                Registers[0] = (int)code;
+                Registers[(int)Register.R0] = (int)code;
             }
             catch
             {
