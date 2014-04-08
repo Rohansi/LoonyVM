@@ -1,5 +1,4 @@
-﻿
-namespace LoonyVM
+﻿namespace LoonyVM
 {
     internal static class Util
     {

@@ -1,5 +1,4 @@
-﻿
-namespace LoonyVM.Devices
+﻿namespace LoonyVM.Devices
 {
     public class SysCall : IDevice
     {

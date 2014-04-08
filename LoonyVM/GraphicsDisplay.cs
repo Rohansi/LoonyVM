@@ -1,5 +1,4 @@
 ﻿using SFML.Graphics;
-using SFML.Window;
 
 namespace LoonyVM
 {

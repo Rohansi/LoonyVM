@@ -1,5 +1,4 @@
-﻿
-namespace LoonyVM
+﻿namespace LoonyVM
 {
     public interface IDevice
     {
