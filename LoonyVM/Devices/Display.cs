@@ -61,17 +61,17 @@ namespace LoonyVM.Devices
 
         public void HandleInterrupt(VirtualMachine machine)
         {
-            switch (machine.Registers[0])
+            switch (machine.Registers[(int)Register.R0])
             {
                 case 0: // change mode
-                    ChangeVideoMode((VideoMode)machine.Registers[1]);
+                    ChangeVideoMode((VideoMode)machine.Registers[(int)Register.R1]);
                     break;
                 case 1: // enable cursor
-                    _cursorEnabled = machine.Registers[1] != 0;
+                    _cursorEnabled = machine.Registers[(int)Register.R1] != 0;
                     break;
                 case 2: // move cursor
-                    _cursor.Position = new Vector2f(machine.Registers[1] * _textDisplay.CharacterWidth,
-                                                    machine.Registers[2] * _textDisplay.CharacterHeight);
+                    _cursor.Position = new Vector2f(machine.Registers[(int)Register.R1] * _textDisplay.CharacterWidth,
+                                                    machine.Registers[(int)Register.R2] * _textDisplay.CharacterHeight);
                     break;
             }
         }

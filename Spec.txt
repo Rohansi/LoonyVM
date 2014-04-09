@@ -73,7 +73,10 @@ Devices
 --------------------
 00   System
 01   Timer
+02   Keyboard
+03   Serial
 06   Display
+08   Hard Drive
 
 Flags register
 --------------------

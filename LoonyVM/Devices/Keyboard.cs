@@ -57,17 +57,17 @@ namespace LoonyVM.Devices
             lock (_eventQueue)
             {
                 var ev = _eventQueue.Dequeue();
-                machine.Registers[0] = ev.Pressed ? 1 : 0;
-                machine.Registers[1] = ev.Key;
+                machine.Registers[(int)Register.R0] = ev.Pressed ? 1 : 0;
+                machine.Registers[(int)Register.R1] = ev.Key;
             }
         }
 
         public void HandleInterrupt(VirtualMachine machine)
         {
-            switch (machine.Registers[0])
+            switch (machine.Registers[(int)Register.R0])
             {
                 case 0: // enable
-                    _enabled = machine.Registers[1] != 0;
+                    _enabled = machine.Registers[(int)Register.R1] != 0;
                     break;
             }
         }

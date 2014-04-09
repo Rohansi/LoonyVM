@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading;
+using ThreadTimer = System.Threading.Timer;
 
 namespace LoonyVM.Devices
 {
@@ -8,37 +7,19 @@ namespace LoonyVM.Devices
     {
         public byte Id { get { return 0x01; } }
 
-        private Thread _thread;
-        private bool _running;
-
-        private Stopwatch _watch;
+        private ThreadTimer _timer;
         private bool _enabled;
-        private double _frequency;
+        private TimeSpan _frequency;
         private bool _interrupt;
 
         public Timer()
         {
-            _watch = Stopwatch.StartNew();
             _enabled = false;
-            _frequency = 1.0 / 100;
+            _frequency = TimeSpan.FromSeconds(1.0 / 100);
             _interrupt = false;
 
-            _running = true;
-            _thread = new Thread(() =>
-            {
-                while (_running)
-                {
-                    if (_enabled && _watch.Elapsed.TotalSeconds >= _frequency)
-                    {
-                        _interrupt = true;
-                        _watch.Restart();
-                    }
-
-                    Thread.Sleep(1);
-                }
-            });
-
-            _thread.Start();
+            _timer = new ThreadTimer(o => _interrupt = true);
+            _timer.Change(_frequency, _frequency);
         }
 
         public bool InterruptRequest
@@ -53,21 +34,22 @@ namespace LoonyVM.Devices
 
         public void HandleInterrupt(VirtualMachine machine)
         {
-            switch (machine.Registers[0])
+            switch (machine.Registers[(int)Register.R0])
             {
                 case 0: // enable
-                    _enabled = machine.Registers[1] != 0;
+                    _enabled = machine.Registers[(int)Register.R1] != 0;
+                    _interrupt = false;
                     break;
                 case 1: // set frequency
-                    _frequency = 1.0 / Util.Clamp(machine.Registers[1], 1, 1000);
+                    _frequency = TimeSpan.FromSeconds(1.0 / Util.Clamp(machine.Registers[(int)Register.R1], 1, 1000));
+                    _timer.Change(_frequency, _frequency);
                     break;
             }
         }
 
         public void Dispose()
         {
-            _running = false;
-            _thread.Join();
+            _timer.Dispose();
         }
     }
 }

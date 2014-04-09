@@ -68,6 +68,7 @@
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Devices\SysCall.cs" />
     <Compile Include="Devices\Timer.cs" />
+    <Compile Include="Devices\Serial.cs" />
     <Compile Include="GraphicsDisplay.cs" />
     <Compile Include="IDevice.cs" />
     <Compile Include="Devices\Display.cs" />

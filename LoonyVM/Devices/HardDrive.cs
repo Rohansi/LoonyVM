@@ -24,36 +24,36 @@ namespace LoonyVM.Devices
 
         public void HandleInterrupt(VirtualMachine machine)
         {
-            switch (machine.Registers[0])
+            switch (machine.Registers[(int)Register.R0])
             {
                 case 0: // specs
-                    machine.Registers[0] = _sectorSize;
-                    machine.Registers[1] = _sectorCount;
+                    machine.Registers[(int)Register.R0] = _sectorSize;
+                    machine.Registers[(int)Register.R1] = _sectorCount;
                     break;
                 case 1: // read sector
-                    ReadSector(machine, machine.Registers[1], machine.Registers[2]);
+                    ReadSector(machine, machine.Registers[(int)Register.R1], machine.Registers[(int)Register.R2]);
                     break;
                 case 2: // write sector
-                    WriteSector(machine, machine.Registers[1], machine.Registers[2]);
+                    WriteSector(machine, machine.Registers[(int)Register.R1], machine.Registers[(int)Register.R2]);
                     break;
                 case 3: // read sectors
-                    while (machine.Registers[3]-- > 0)
+                    while (machine.Registers[(int)Register.R3]-- > 0)
                     {
-                        ReadSector(machine, machine.Registers[1], machine.Registers[2]);
-                        machine.Registers[1] += _sectorSize;
-                        machine.Registers[2]++;
+                        ReadSector(machine, machine.Registers[(int)Register.R1], machine.Registers[(int)Register.R2]);
+                        machine.Registers[(int)Register.R1] += _sectorSize;
+                        machine.Registers[(int)Register.R2]++;
                     }
                     break;
                 case 4: // write sectors
-                    while (machine.Registers[3]-- > 0)
+                    while (machine.Registers[(int)Register.R3]-- > 0)
                     {
-                        WriteSector(machine, machine.Registers[1], machine.Registers[2]);
-                        machine.Registers[1] += _sectorSize;
-                        machine.Registers[2]++;
+                        WriteSector(machine, machine.Registers[(int)Register.R1], machine.Registers[(int)Register.R2]);
+                        machine.Registers[(int)Register.R1] += _sectorSize;
+                        machine.Registers[(int)Register.R2]++;
                     }
                     break;
                 case 100: // identify
-                    machine.Registers[0] = 0xB10C;
+                    machine.Registers[(int)Register.R0] = 0xB10C;
                     break;
             }
         }
