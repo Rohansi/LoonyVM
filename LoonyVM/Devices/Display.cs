@@ -13,7 +13,7 @@ namespace LoonyVM.Devices
             Graphics = 1
         }
 
-        public byte Id { get { return 0x06; } }
+        public byte Id { get; private set; }
 
         private VideoMode _mode;
         private VirtualMachine _machine;
@@ -27,8 +27,10 @@ namespace LoonyVM.Devices
         private Stopwatch _cursorTimer;
         private RectangleShape _cursor;
 
-        public Display(VirtualMachine machine, RenderWindow window)
+        public Display(byte id, VirtualMachine machine, RenderWindow window)
         {
+            Id = id;
+
             _machine = machine;
             _window = window;
 

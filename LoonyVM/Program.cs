@@ -31,18 +31,20 @@ namespace LoonyVM
             for (var i = 0; i < prog.Length; i++)
                 Machine.Memory[i] = prog[i];
 
-            var display = new Devices.Display(Machine, Window);
-            Machine.Attach(display);
-
-            var kbd = new Devices.Keyboard(Window);
+            var kbd = new Devices.Keyboard(0x02, Window);
             Machine.Attach(kbd);
 
-            var hdd = new Devices.HardDrive("disk.img");
+            var display = new Devices.Display(0x06, Machine, Window);
+            Machine.Attach(display);
+
+            var hdd = new Devices.HardDrive(0x08, "disk.img");
             Machine.Attach(hdd);
+
+            var running = true;
 
             var stepThread = new Thread(() =>
             {
-                while (Window.IsOpen())
+                while (running)
                 {
                     Machine.Step();
                 }
@@ -59,6 +61,7 @@ namespace LoonyVM
                 Window.Display();
             }
 
+            running = false;
             stepThread.Join();
             Machine.Dispose();
         }

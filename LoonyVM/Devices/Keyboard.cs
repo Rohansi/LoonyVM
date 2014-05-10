@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SFML.Graphics;
+using SFML.Window;
 using SFMLKey = SFML.Window.Keyboard.Key;
 
 namespace LoonyVM.Devices
@@ -18,13 +18,15 @@ namespace LoonyVM.Devices
             }
         }
 
-        public byte Id { get { return 0x02; } }
+        public byte Id { get; private set; }
 
         private bool _enabled;
         private Queue<KeyEvent> _eventQueue;
 
-        public Keyboard(RenderWindow window)
+        public Keyboard(byte id, Window window)
         {
+            Id = id;
+
             _enabled = false;
             _eventQueue = new Queue<KeyEvent>(10);
 

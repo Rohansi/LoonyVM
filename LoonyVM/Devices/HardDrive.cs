@@ -5,7 +5,7 @@ namespace LoonyVM.Devices
 {
     public class HardDrive : IDevice
     {
-        public byte Id { get { return 0x08; } }
+        public byte Id { get; private set; }
 
         public bool InterruptRequest { get { return false; } }
 
@@ -14,8 +14,10 @@ namespace LoonyVM.Devices
         private byte[] _sectorBuff;
         private int _sectorCount;
 
-        public HardDrive(string filename, int sectorSize = 512)
+        public HardDrive(byte id, string filename, int sectorSize = 512)
         {
+            Id = id;
+
             _sectorSize = sectorSize;
             _stream = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite);
             _sectorBuff = new byte[sectorSize];

@@ -4,14 +4,16 @@ namespace LoonyVM.Devices
 {
     public class Serial : IDevice
     {
-        public byte Id { get { return 0x03; } }
+        public byte Id { get; private set; }
 
         private bool _enabled;
         private Queue<byte> _inputQueue;
         private Queue<byte> _outputQueue;
 
-        public Serial()
+        public Serial(byte id)
         {
+            Id = id;
+
             _enabled = false;
             _inputQueue = new Queue<byte>();
             _outputQueue = new Queue<byte>();
