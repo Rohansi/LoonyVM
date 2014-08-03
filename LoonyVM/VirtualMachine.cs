@@ -287,13 +287,13 @@ namespace LoonyVM
                         }
                         break;
                     case Opcode.Pusha:
-                        for (var i = (int)Register.R9; i >= (int)Register.R0; i--)
+                        for (var i = (int)Register.R9; i >= (int)Register.R1; i--)
                         {
                             Push(Registers[i]);
                         }
                         break;
                     case Opcode.Popa:
-                        for (var i = (int)Register.R0; i <= (int)Register.R9; i++)
+                        for (var i = (int)Register.R1; i <= (int)Register.R9; i++)
                         {
                             Registers[i] = Pop();
                         }

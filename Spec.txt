@@ -4,7 +4,8 @@ Has at least 512kB of memory.
 
 Registers
 --------------------
-R0-R9   10 general purpose registers
+R0      Return value/general purpose
+R1-R9   General purpose
 BP      Base pointer
 SP      Stack pointer
 IP      Instruction pointer
